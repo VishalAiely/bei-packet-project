@@ -10,9 +10,11 @@
   "dependencies": {
     "@types/google-spreadsheet": "^3.0.2",
     "@types/lokijs": "^1.5.3",
+    "docx": "^5.4.1",
     "google-auth-library": "^6.1.3",
     "google-spreadsheet": "^3.0.14",
     "googleapis": "^66.0.0",
+    "libreoffice-convert": "^1.3.2",
     "lokijs": "^1.5.11",
     "next": "10.0.4",
     "react": "17.0.1",

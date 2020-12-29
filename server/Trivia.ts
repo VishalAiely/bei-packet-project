@@ -2,14 +2,9 @@ import { google } from 'googleapis';
 import { auth } from './auth';
 import { questionCacheRefreshTime } from "../globals"
 import fs from "fs";
+import { Question } from "../util/types/Trivia";
 
-export interface Question {
-    Volunteer: string;
-    Difficulty?: 'Easy' | 'Medium' | 'Hard' | 'Extra Hard';
-    Categories?: string[];
-    Question: string;
-    Answer: string;
-}
+
 
 export async function getTriviaQuestions(): Promise<Question[]> {
 
@@ -29,11 +24,6 @@ export async function getTriviaQuestions(): Promise<Question[]> {
 
     return data
 }
-
-
-
-
-
 
 async function getTriviaQuestionsFromCache(): Promise<Question[]> {
 
