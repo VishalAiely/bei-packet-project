@@ -1,11 +1,9 @@
-import { Document, Packer, Paragraph, TextRun } from "docx"
-import { Difficulty, TriviaOptions, Question } from "../../util/types/Trivia";
-import fs from 'fs'
-
+import { Document, Packer, Paragraph, TextRun } from "docx";
+import { Difficulty, TriviaOptions, Question } from "../../utils/types/Trivia";
+import fs from "fs";
 
 export async function GenerateDocx() {
-
-    const doc = new Document()
+    const doc = new Document();
 
     doc.addSection({
         properties: {},
@@ -26,19 +24,14 @@ export async function GenerateDocx() {
         ],
     });
 
-    let buffer = await Packer.toBuffer(doc)
+    const buffer = await Packer.toBuffer(doc);
     fs.writeFileSync("MyDocument.docx", buffer);
 }
 
 export default class TriviaDocument {
-
-
-
     makeDoc(Options: TriviaOptions): Document {
+        const document = new Document();
 
-        const document = new Document
-
-        return document
+        return document;
     }
-
 }

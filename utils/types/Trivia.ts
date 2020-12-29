@@ -1,4 +1,4 @@
-export type Difficulty = 'Very Easy' | 'Easy' | 'Medium' | 'Hard'; 
+export type Difficulty = "Very Easy" | "Easy" | "Medium" | "Hard";
 
 export interface Question {
     Volunteer: string;
