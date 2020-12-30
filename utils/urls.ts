@@ -1,3 +1,5 @@
 export default {
-    api: {},
+  api: {
+    trivia: '/api/trivia',
+  },
 };

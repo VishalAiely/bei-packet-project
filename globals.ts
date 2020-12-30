@@ -1,4 +1,3 @@
+export const questionCacheRefreshTime: number = 43200 * 1000;
 
-export const questionCacheRefreshTime: number = 86400
-
-export const questionCache: string = 'cache/questionsCache.json'
+export const questionCache = 'cache/questionsCache.json';

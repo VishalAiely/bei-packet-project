@@ -9,11 +9,7 @@ export async function getTriviaQuestions(): Promise<Question[]> {
 
   try {
     const stats = fs.statSync('server/cache/questionCache.json');
-    if (
-      !stats == undefined ||
-      new Date().getTime() >
-        new Date(stats.ctime).getTime() + questionCacheRefreshTime
-    ) {
+    if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
       throw new Error('Revalidate Cache');
     } else {
       data = await getTriviaQuestionsFromCache();
@@ -27,9 +23,7 @@ export async function getTriviaQuestions(): Promise<Question[]> {
 
 async function getTriviaQuestionsFromCache(): Promise<Question[]> {
   const rawdata = fs.readFileSync('server/cache/questionCache.json');
-  const parsedData =
-    (JSON.parse(rawdata.toString()) as Question[]) ??
-    (await getTriviaQuestionsFromSheets());
+  const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
   return parsedData;
 }
 
@@ -39,18 +33,52 @@ async function getTriviaQuestionsFromCache(): Promise<Question[]> {
 async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
   const sheetsApi = google.sheets({ version: 'v4' });
 
-  const data = await sheetsApi.spreadsheets.values.get({
+  const {
+    data: { values },
+  } = await sheetsApi.spreadsheets.values.get({
     auth: await auth(),
     spreadsheetId: '1l01y0fYhnlobHzra1HazzDJirgdrq8wej-G-7ZWRYss',
     range: 'Sheet1',
   });
 
+  // removes the keys
+  values?.shift();
+
   const typedQuestions: Question[] =
-    data.data.values?.map(row => {
+    values?.map((row, ind) => {
+      let diff: Difficulty;
+      let cats: string[];
+
+      switch (row[2] as string) {
+        case 'Very Easy':
+          diff = Difficulty.Very_Easy;
+          break;
+        case 'Easy':
+          diff = Difficulty.Easy;
+          break;
+        case 'Medium':
+          diff = Difficulty.Medium;
+          break;
+        case 'Hard':
+          diff = Difficulty.Hard;
+          break;
+        default:
+          diff = 0;
+          break;
+      }
+
+      cats = (<string>row[2]).split(',');
+      for (let i = 0; i < cats.length; i++) {
+        cats[i] = cats[i].trim().toLowerCase();
+      }
+
+      if (cats[0] == '') cats = [];
+
       return {
+        Id: ind,
         Volunteer: row[0] as string,
-        Difficulty: row[1] as Difficulty,
-        Categories: row[2] as string[],
+        Difficulty: diff,
+        Categories: cats,
         Question: row[3] as string,
         Answer: row[4] as string,
       };
@@ -63,10 +91,8 @@ async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
       console.log(err);
       return;
     }
-    console.log(`Question Cache has been created: ${new Date().toUTCString()}`);
+    console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
   });
-
-  console.log(typedQuestions);
 
   return typedQuestions;
 }
