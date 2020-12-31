@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getTriviaQuestions } from '../../server/Trivia';
-import { TriviaOptions, Difficulty, Question, StringToDifficulty } from 'utils/types/Trivia';
+import { TriviaOptions, Difficulty, Question, StringToDifficulty } from '../../utils/types/Trivia';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-  if (req.method != 'GET') {
+  if (req.method != 'POST') {
     res.status(400).json({ message: 'This API only supports GET requests.' });
   }
 
