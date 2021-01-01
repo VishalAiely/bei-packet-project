@@ -36,6 +36,8 @@ packet-generator.json
 # local cache
 cache
 
+# vscode
+.vscode
 
 # vercel
 .vercel
