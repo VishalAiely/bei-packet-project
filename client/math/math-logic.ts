@@ -22,7 +22,7 @@ export function getRandomMathProblem(operations: operation[], maxNumber: number)
     firstOperand: Math.floor(Math.random() * maxNumber),
     secondOperand: Math.floor(Math.random() * maxNumber),
     operation: operations[Math.floor(Math.random() * operations.length)],
-    answer: -1,
+    answer: NaN,
   };
 
   switch (prob.operation) {
@@ -44,5 +44,11 @@ export function getRandomMathProblem(operations: operation[], maxNumber: number)
 }
 
 export function getAllRandomMathProblems(options: MathOptions): MathProblem[] {
-  throw new Error('Not Implemented');
+  const arrayOfProblems: MathProblem[] = [];
+
+  for (let i = 0; i < options.numberofQuestions; i++) {
+    arrayOfProblems.push(getRandomMathProblem(options.operations, options.maxNumber));
+  }
+
+  return arrayOfProblems;
 }
