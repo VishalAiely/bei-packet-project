@@ -1,8 +1,17 @@
-import { getRandomMathProblem, operation } from '../../client/math/math-logic';
+import { getRandomMathProblem, operation, MathOptions, getAllRandomMathProblems } from '../../client/math/math-logic';
 
 describe('getAllRandomMathProblems', () => {
-  it.todo('Math function gives me correct number of problems');
-  it.todo('Are the math problems random enough?');
+  it('Math function gives me correct number of problems', () => {
+    const Nproblems: number = Math.floor(Math.random() * 25) + 1;
+
+    const options: MathOptions = {
+      numberofQuestions: Nproblems,
+      operations: ['+', '*'],
+      maxNumber: 30,
+    };
+    const problems = getAllRandomMathProblems(options);
+    expect(problems.length).toBe(Nproblems);
+  });
 });
 
 describe('getRandomMathProblem', () => {
