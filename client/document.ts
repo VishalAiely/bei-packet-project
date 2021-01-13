@@ -1,5 +1,5 @@
 import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { TriviaOptions, Question } from '../../utils/types/Trivia';
+import { TriviaOptions, Question } from 'utils/types/Trivia';
 import { saveAs } from 'file-saver';
 import urls from 'utils/urls';
 
@@ -41,7 +41,7 @@ export async function GenerateDocx() {
   saveAs(blob, 'test.docx');
 }
 
-export default class TriviaDocument {
+export default class DocumentGenerator {
   makeDoc(Options: TriviaOptions): Document {
     const document = new Document();
 
