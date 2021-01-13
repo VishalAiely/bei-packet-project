@@ -1,9 +1,10 @@
 import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { TriviaOptions, Question } from 'utils/types/Trivia';
+import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
+import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
 import { saveAs } from 'file-saver';
 import urls from 'utils/urls';
 
-export async function GenerateDocx() {
+export async function GenerateDocx(): Promise<void> {
   const doc = new Document();
 
   const resp = await fetch(urls.api.trivia, {
@@ -41,10 +42,73 @@ export async function GenerateDocx() {
   saveAs(blob, 'test.docx');
 }
 
-export default class DocumentGenerator {
-  makeDoc(Options: TriviaOptions): Document {
-    const document = new Document();
+const defaultMathOps: MathOptions = {
+  maxNumber: 9,
+  numberofQuestions: 20,
+  operations: ['+', '-'],
+};
 
-    return document;
+const defaultTriviaOps: TriviaOptions = {
+  Difficulty: Difficulty.Easy,
+  NumberofQuestions: 7,
+  Categories: [],
+  StrictCategory: false,
+};
+
+export default class DocumentGenerator {
+  // Options and Docs
+  private mainDoc: Document;
+  private triviaOptions: TriviaOptions;
+  private mathOptions: MathOptions;
+
+  // Store Questions
+  private triviaQuestions: Question[];
+  private mathQuestions: MathProblem[];
+
+  constructor(triviaOp?: TriviaOptions, mathOp?: MathOptions) {
+    // Initial Setup
+    this.mainDoc = new Document();
+    this.triviaOptions = triviaOp || defaultTriviaOps;
+    this.mathOptions = mathOp || defaultMathOps;
+
+    // Initialize Storage of questions
+    this.triviaQuestions = [];
+    this.mathQuestions = [];
+  }
+
+  setTriviaOptions(options: TriviaOptions): void {
+    this.triviaOptions = options;
+  }
+
+  setMathOptions(options: MathOptions): void {
+    this.mathOptions = options;
+  }
+
+  async genTriviaQuestions(): Promise<Question[]> {
+    const questions = await fetch(urls.api.trivia, {
+      method: 'POST',
+      body: JSON.stringify(this.triviaOptions),
+    });
+
+    const parsedQuestions = (await questions.json()) as Question[];
+
+    this.triviaQuestions = parsedQuestions;
+
+    return this.triviaQuestions;
+  }
+
+  genMathQuestions(): MathProblem[] {
+    this.mathQuestions = getAllRandomMathProblems(this.mathOptions);
+
+    return this.mathQuestions;
+  }
+
+  makeDoc(): Document {
+    return this.mainDoc;
+  }
+
+  async downloadDoc(): Promise<void> {
+    const blob = await Packer.toBlob(this.mainDoc);
+    saveAs(blob, 'QuestionPacket.docx');
   }
 }
