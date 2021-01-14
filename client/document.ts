@@ -15,6 +15,7 @@ import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
 import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
 import { saveAs } from 'file-saver';
 import urls from 'utils/urls';
+import { Story } from 'server/Story';
 
 // Default Options
 const defaultMathOps: MathOptions = {
@@ -64,6 +65,7 @@ export default class DocumentGenerator {
   // Store Questions
   private triviaQuestions: Question[];
   private mathQuestions: MathProblem[];
+  private storyData: Story;
 
   constructor(triviaOp?: TriviaOptions, mathOp?: MathOptions) {
     // Initial Setup
@@ -74,6 +76,7 @@ export default class DocumentGenerator {
     // Initialize Storage of questions
     this.triviaQuestions = [];
     this.mathQuestions = [];
+    this.storyData = {} as Story;
   }
 
   private getTableRows(Cells: TableCell[][]): TableRow[] {
@@ -109,6 +112,12 @@ export default class DocumentGenerator {
     this.mathQuestions = getAllRandomMathProblems(this.mathOptions);
 
     return this.mathQuestions;
+  }
+
+  async genReading(): Promise<Story> {
+    const storyResp = await fetch(urls.api.story);
+    this.storyData = <Story>await storyResp.json();
+    return this.storyData;
   }
 
   makeTriviaSection(): void {
@@ -224,7 +233,33 @@ export default class DocumentGenerator {
   }
 
   makeReadingSection(): void {
-    return;
+    this.mainDoc.addSection({
+      children: [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: this.storyData.title,
+              bold: true,
+              size: 48,
+            }),
+          ],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `By ${this.storyData.author}`, size: 32 })],
+        }),
+        new Paragraph(''),
+        ...this.storyData.paragraphs.map(para => {
+          return new Paragraph({
+            spacing: {
+              before: 200,
+            },
+            children: [new TextRun({ text: para, size: 28 })],
+          });
+        }),
+      ],
+    });
   }
 
   makeDoc(sectionOrder: sections[]): Document {

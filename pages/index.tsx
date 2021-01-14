@@ -9,6 +9,7 @@ export default function Home() {
     const sectionOrder: sections[] = ['Trivia', 'Math', 'Reading'];
     await docs.genTriviaQuestions();
     docs.genMathQuestions();
+    await docs.genReading();
     docs.makeDoc(sectionOrder);
     await docs.downloadDoc();
   };
