@@ -7,11 +7,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(400).json({ message: 'This API only supports GET requests.' });
   }
 
-  const opt = req.body as { [key: string]: unknown };
+  const opt = JSON.parse(req.body) as { [key: string]: unknown };
 
   let converted_diff: Difficulty | undefined;
   if (opt['Difficulty'] != undefined) {
-    converted_diff = StringToDifficulty(<string>opt.Difficulty);
+    converted_diff = StringToDifficulty(<string>opt.Difficulty) || (opt.Difficulty as Difficulty);
   }
 
   const Options: TriviaOptions = {
