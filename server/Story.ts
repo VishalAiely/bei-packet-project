@@ -4,7 +4,7 @@ export interface Story {
   title: string;
   image: string;
   author: string;
-  paragrapgs: string[];
+  paragraphs: string[];
 }
 
 export function getRandomStory(): Story {
