@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun } from 'docx';
+import { AlignmentType, Document, Packer, Paragraph, TextRun } from 'docx';
 import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
 import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
 import { saveAs } from 'file-saver';
@@ -104,6 +104,75 @@ export default class DocumentGenerator {
   }
 
   makeDoc(): Document {
+    // Trivia
+    const questionsParagrpahs: Paragraph[] = [];
+    let index = 1;
+    let para: Paragraph;
+    for (const ques of this.triviaQuestions) {
+      para = new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: `${index}. ${ques.Question}`, size: 32, bold: true })],
+      });
+      questionsParagrpahs.push(para);
+      questionsParagrpahs.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        })
+      );
+      questionsParagrpahs.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        })
+      );
+      questionsParagrpahs.push(new Paragraph(''));
+      questionsParagrpahs.push(new Paragraph(''));
+      questionsParagrpahs.push(new Paragraph(''));
+      index++;
+    }
+
+    this.mainDoc.addSection({
+      properties: {},
+      children: [
+        // Trivia Header
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: 'Trivia', bold: true, size: 48 })],
+        }),
+        new Paragraph({ children: [new TextRun('')] }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: 'Please write the question down first then the answer.', size: 32 })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: 'We are writing it down first because this activates the prefrontal cortex of the brain',
+              size: 32,
+            }),
+          ],
+        }),
+        new Paragraph(''),
+        new Paragraph(''),
+        new Paragraph(''),
+        ...questionsParagrpahs,
+      ],
+    });
+
     return this.mainDoc;
   }
 
