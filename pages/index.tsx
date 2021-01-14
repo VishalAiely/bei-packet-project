@@ -7,6 +7,7 @@ export default function Home() {
 
   const gen = async () => {
     await docs.genTriviaQuestions();
+    docs.genMathQuestions();
     docs.makeDoc();
     await docs.downloadDoc();
   };

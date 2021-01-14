@@ -19,8 +19,8 @@ export function getRandomMathProblem(operations: operation[], maxNumber: number)
   }
 
   const prob: MathProblem = {
-    firstOperand: Math.floor(Math.random() * maxNumber),
-    secondOperand: Math.floor(Math.random() * maxNumber),
+    firstOperand: Math.floor(Math.random() * maxNumber + 1),
+    secondOperand: Math.floor(Math.random() * maxNumber + 1),
     operation: operations[Math.floor(Math.random() * operations.length)],
     answer: NaN,
   };
