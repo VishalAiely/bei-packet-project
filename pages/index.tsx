@@ -1,14 +1,15 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import DocumentGen from 'client/document';
+import DocumentGen, { sections } from 'client/document';
 
 export default function Home() {
   const docs = new DocumentGen();
 
   const gen = async () => {
+    const sectionOrder: sections[] = ['Trivia', 'Math', 'Reading'];
     await docs.genTriviaQuestions();
     docs.genMathQuestions();
-    docs.makeDoc();
+    docs.makeDoc(sectionOrder);
     await docs.downloadDoc();
   };
 

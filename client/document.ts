@@ -53,6 +53,8 @@ const emptyBorder: ITableBordersOptions = {
   },
 };
 
+export type sections = 'Trivia' | 'Math' | 'Reading';
+
 export default class DocumentGenerator {
   // Options and Docs
   private mainDoc: Document;
@@ -109,10 +111,7 @@ export default class DocumentGenerator {
     return this.mathQuestions;
   }
 
-  makeDoc(): Document {
-    this.mainDoc = new Document();
-
-    // Trivia
+  makeTriviaSection(): void {
     const questionsParagrpahs: Paragraph[] = [];
     let index = 1;
     let para: Paragraph;
@@ -179,9 +178,9 @@ export default class DocumentGenerator {
         ...questionsParagrpahs,
       ],
     });
+  }
 
-    // Math Section
-    console.log(this.mathQuestions.length);
+  makeMathSection(): void {
     const sectionedProblems: Array<TableCell[]> = new Array<TableCell[]>(Math.floor(this.mathQuestions.length / 3));
     for (let i = 0; i < this.mathQuestions.length; i++) {
       const currentQuestion = this.mathQuestions[i];
@@ -211,8 +210,6 @@ export default class DocumentGenerator {
       );
     }
 
-    console.log(sectionedProblems);
-
     const table = new Table({
       alignment: AlignmentType.CENTER,
       rows: this.getTableRows(sectionedProblems),
@@ -224,6 +221,30 @@ export default class DocumentGenerator {
     });
 
     this.mainDoc.addSection({ children: [table] });
+  }
+
+  makeReadingSection(): void {
+    return;
+  }
+
+  makeDoc(sectionOrder: sections[]): Document {
+    this.mainDoc = new Document();
+
+    const sectionMap = {
+      Trivia: () => {
+        this.makeTriviaSection();
+      },
+      Math: () => {
+        this.makeMathSection();
+      },
+      Reading: () => {
+        this.makeReadingSection();
+      },
+    };
+
+    for (const section of sectionOrder) {
+      sectionMap[section]();
+    }
 
     return this.mainDoc;
   }
