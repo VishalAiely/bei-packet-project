@@ -1,58 +1,56 @@
-import { AlignmentType, Document, Packer, Paragraph, TextRun } from 'docx';
+import {
+  AlignmentType,
+  BorderStyle,
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  ITableBordersOptions,
+  WidthType,
+} from 'docx';
 import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
 import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
 import { saveAs } from 'file-saver';
 import urls from 'utils/urls';
 
-export async function GenerateDocx(): Promise<void> {
-  const doc = new Document();
-
-  const resp = await fetch(urls.api.trivia, {
-    method: 'GET',
-  });
-
-  const questions = <Question[]>await resp.json();
-
-  doc.addSection({
-    properties: {},
-    children: questions.map(
-      question =>
-        new Paragraph({
-          children: [new TextRun(question.Question)],
-        })
-    ),
-
-    // new Paragraph({
-    //   children: [
-    //     new TextRun('Hello World'),
-    //     new TextRun({
-    //       text: 'Foo Bar',
-    //       bold: true,
-    //     }),
-    //     new TextRun({
-    //       text: '\tGithub is the best',
-    //       bold: true,
-    //     }),
-    //   ],
-    // }),
-  });
-
-  console.log('downlaoding file');
-  const blob = await Packer.toBlob(doc);
-  saveAs(blob, 'test.docx');
-}
-
+// Default Options
 const defaultMathOps: MathOptions = {
   maxNumber: 9,
-  numberofQuestions: 20,
+  numberofQuestions: 50,
   operations: ['+', '-'],
 };
 
 const defaultTriviaOps: TriviaOptions = {
   Difficulty: Difficulty.Easy,
-  NumberofQuestions: 7,
+  NumberofQuestions: 5,
   Categories: [],
   StrictCategory: false,
+};
+
+const emptyBorder: ITableBordersOptions = {
+  top: {
+    style: BorderStyle.NONE,
+    size: 15,
+    color: 'black',
+  },
+  bottom: {
+    style: BorderStyle.NONE,
+    size: 15,
+    color: 'black',
+  },
+  left: {
+    style: BorderStyle.NONE,
+    size: 15,
+    color: 'black',
+  },
+  right: {
+    style: BorderStyle.NONE,
+    size: 15,
+    color: 'black',
+  },
 };
 
 export default class DocumentGenerator {
@@ -74,6 +72,14 @@ export default class DocumentGenerator {
     // Initialize Storage of questions
     this.triviaQuestions = [];
     this.mathQuestions = [];
+  }
+
+  private getTableRows(Cells: TableCell[][]): TableRow[] {
+    const rows: TableRow[] = [];
+    for (const r of Cells) {
+      rows.push(new TableRow({ children: r }));
+    }
+    return rows;
   }
 
   setTriviaOptions(options: TriviaOptions): void {
@@ -104,13 +110,15 @@ export default class DocumentGenerator {
   }
 
   makeDoc(): Document {
+    this.mainDoc = new Document();
+
     // Trivia
     const questionsParagrpahs: Paragraph[] = [];
     let index = 1;
     let para: Paragraph;
     for (const ques of this.triviaQuestions) {
       para = new Paragraph({
-        alignment: AlignmentType.CENTER,
+        alignment: AlignmentType.LEFT,
         children: [new TextRun({ text: `${index}. ${ques.Question}`, size: 32, bold: true })],
       });
       questionsParagrpahs.push(para);
@@ -145,7 +153,6 @@ export default class DocumentGenerator {
     }
 
     this.mainDoc.addSection({
-      properties: {},
       children: [
         // Trivia Header
         new Paragraph({
@@ -172,6 +179,51 @@ export default class DocumentGenerator {
         ...questionsParagrpahs,
       ],
     });
+
+    // Math Section
+    console.log(this.mathQuestions.length);
+    const sectionedProblems: Array<TableCell[]> = new Array<TableCell[]>(Math.floor(this.mathQuestions.length / 3));
+    for (let i = 0; i < this.mathQuestions.length; i++) {
+      const currentQuestion = this.mathQuestions[i];
+      const row = Math.floor(i / 3);
+      if (!sectionedProblems[row]) sectionedProblems[row] = new Array<TableCell>();
+      sectionedProblems[row].push(
+        new TableCell({
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({
+                  text: `${currentQuestion.firstOperand} ${currentQuestion.operation} ${currentQuestion.secondOperand} = `,
+                  size: 58,
+                }),
+              ],
+            }),
+          ],
+          borders: emptyBorder,
+          margins: {
+            top: 20,
+            bottom: 500,
+            left: 20,
+            right: 20,
+          },
+        })
+      );
+    }
+
+    console.log(sectionedProblems);
+
+    const table = new Table({
+      alignment: AlignmentType.CENTER,
+      rows: this.getTableRows(sectionedProblems),
+      width: {
+        size: 100,
+        type: WidthType.PERCENTAGE,
+      },
+      columnWidths: [33, 33, 33],
+    });
+
+    this.mainDoc.addSection({ children: [table] });
 
     return this.mainDoc;
   }
