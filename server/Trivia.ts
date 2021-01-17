@@ -49,7 +49,7 @@ async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
       let diff: Difficulty;
       let cats: string[];
 
-      switch (row[2] as string) {
+      switch (row[1] as string) {
         case 'Very Easy':
           diff = Difficulty.Very_Easy;
           break;
