@@ -130,6 +130,7 @@ export default class DocumentGenerator {
         children: [new TextRun({ text: `${index}. ${ques.Question}`, size: 32, bold: true })],
       });
       questionsParagrpahs.push(para);
+      questionsParagrpahs.push(new Paragraph(''));
       questionsParagrpahs.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
@@ -142,6 +143,7 @@ export default class DocumentGenerator {
           ],
         })
       );
+      questionsParagrpahs.push(new Paragraph(''));
       questionsParagrpahs.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
@@ -154,10 +156,12 @@ export default class DocumentGenerator {
           ],
         })
       );
-      questionsParagrpahs.push(new Paragraph(''));
-      questionsParagrpahs.push(new Paragraph(''));
-      questionsParagrpahs.push(new Paragraph(''));
-      index++;
+      if (this.triviaQuestions.length !== index) {
+        questionsParagrpahs.push(new Paragraph(''));
+        questionsParagrpahs.push(new Paragraph(''));
+        questionsParagrpahs.push(new Paragraph(''));
+        index++;
+      }
     }
 
     this.mainDoc.addSection({
@@ -181,7 +185,6 @@ export default class DocumentGenerator {
             }),
           ],
         }),
-        new Paragraph(''),
         new Paragraph(''),
         new Paragraph(''),
         ...questionsParagrpahs,
