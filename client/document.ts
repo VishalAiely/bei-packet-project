@@ -63,9 +63,9 @@ export default class DocumentGenerator {
   private mathOptions: MathOptions;
 
   // Store Questions
-  private triviaQuestions: Question[];
-  private mathQuestions: MathProblem[];
-  private storyData: Story;
+  public triviaQuestions: Question[];
+  public mathQuestions: MathProblem[];
+  public storyData: Story;
 
   constructor(triviaOp?: TriviaOptions, mathOp?: MathOptions) {
     // Initial Setup
@@ -118,6 +118,24 @@ export default class DocumentGenerator {
     const storyResp = await fetch(urls.api.story);
     this.storyData = <Story>await storyResp.json();
     return this.storyData;
+  }
+
+  async moreTriviaQuestions(resetQuestions: number[]): Promise<Question[]> {
+    const newQuestions = await fetch(urls.api.trivia, {
+      method: 'POST',
+      body: JSON.stringify({
+        Difficulty: this.triviaOptions.Difficulty,
+        NumberofQuestions: resetQuestions.length,
+        Categories: this.triviaOptions.Categories,
+        StrictCategory: this.triviaOptions.StrictCategory,
+      }),
+    });
+
+    const parsedQuestions = (await newQuestions.json()) as Question[];
+
+    for (let i = 0; i < resetQuestions.length; i++) this.triviaQuestions[resetQuestions[i]] = parsedQuestions[i];
+
+    return this.triviaQuestions;
   }
 
   makeTriviaSection(): void {
