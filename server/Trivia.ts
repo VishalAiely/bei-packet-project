@@ -48,18 +48,20 @@ async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
     values?.map((row, ind) => {
       let diff: Difficulty;
       let cats: string[];
+      let preParsedDiff = row[1] as string;
+      preParsedDiff = preParsedDiff.trim().toLowerCase();
 
-      switch (row[1] as string) {
-        case 'Very Easy':
+      switch (preParsedDiff) {
+        case 'very easy':
           diff = Difficulty.Very_Easy;
           break;
-        case 'Easy':
+        case 'easy':
           diff = Difficulty.Easy;
           break;
-        case 'Medium':
+        case 'medium':
           diff = Difficulty.Medium;
           break;
-        case 'Hard':
+        case 'hard':
           diff = Difficulty.Hard;
           break;
         default:
