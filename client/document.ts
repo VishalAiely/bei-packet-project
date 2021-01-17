@@ -54,7 +54,7 @@ const emptyBorder: ITableBordersOptions = {
   },
 };
 
-export type sections = 'Trivia' | 'Math' | 'Reading';
+export type sections = 'Trivia' | 'Math' | 'Reading' | '';
 
 export default class DocumentGenerator {
   // Options and Docs
@@ -295,6 +295,9 @@ export default class DocumentGenerator {
       },
       Reading: () => {
         this.makeReadingSection();
+      },
+      '': () => {
+        console.log('no section');
       },
     };
 
