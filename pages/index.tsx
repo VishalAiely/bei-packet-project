@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import Head from 'next/head';
@@ -11,9 +12,11 @@ import {
   Box,
   Paper,
   Chip,
+  Checkbox,
   Button,
   Grid,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -22,6 +25,7 @@ import {
   AccordionDetails,
   AccordionActions,
   Typography,
+  Tooltip,
   Divider,
   TextField,
   Slider,
@@ -37,6 +41,7 @@ import {
 import 'fontsource-roboto';
 import { ExpandMore } from '@material-ui/icons';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { MathOptions, operation } from 'client/math/math-logic';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,6 +78,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(2),
       minWidth: 130,
     },
+    mathOptions: {
+      minWidth: 200,
+    },
     heading: {
       fontSize: theme.typography.pxToRem(18),
       flexBasis: '33.33%',
@@ -86,6 +94,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function Home(): JSX.Element {
+  const docs = new DocumentGen();
+
   const gen = async () => {
     const triviaOps: TriviaOptions = {
       Difficulty: Difficulty.Easy,
@@ -94,8 +104,8 @@ export default function Home(): JSX.Element {
       StrictCategory: false,
     };
 
-    const docs = new DocumentGen(triviaOps);
     const sectionOrder: sections[] = sectionData;
+    docs.setTriviaOptions(triviaOps);
     await docs.genTriviaQuestions();
     docs.genMathQuestions();
     await docs.genReading();
@@ -103,11 +113,44 @@ export default function Home(): JSX.Element {
     await docs.downloadDoc();
   };
 
+  const regenMath = () => {
+    if (maxNumberMath.current == null || Number(maxNumberMath.current.value) <= 0) {
+      setmaxNumErr(true);
+      return;
+    }
+    setmaxNumErr(false);
+    const operators: operation[] = [];
+
+    if (operations.checkedplus) operators.push('+');
+    if (operations.checkedminus) operators.push('-');
+    if (operations.checkedmulti) operators.push('*');
+    if (operations.checkeddiv) operators.push('/');
+
+    const newMathOptions: MathOptions = {
+      maxNumber: Number(maxNumberMath.current.value),
+      numberofQuestions: numberofMathQuestions,
+      operations: operators,
+    };
+
+    console.log(newMathOptions);
+  };
+
   const classes = useStyles();
   const allAvailableSections: sections[] = ['Trivia', 'Math', 'Reading'];
 
   const [sectionData, setSectionData] = React.useState<sections[]>([]);
   const [sectiontoAdd, setAddingSection] = React.useState<sections>('');
+
+  const maxNumberMath = React.useRef<HTMLInputElement>(null);
+  const [maxNumError, setmaxNumErr] = React.useState<boolean>(false);
+  const [numberofMathQuestions, setNumMathQues] = React.useState<number>(15);
+
+  const [operations, setOperations] = React.useState({
+    checkedplus: true,
+    checkedminus: true,
+    checkedmulti: true,
+    checkeddiv: true,
+  });
 
   const [tExp, setTExp] = React.useState<boolean>(false);
   const [mExp, setMExp] = React.useState<boolean>(false);
@@ -121,6 +164,14 @@ export default function Home(): JSX.Element {
     if (event.target.value) setAddingSection(event.target.value as sections);
   };
 
+  const handleSliderChange = (event: React.ChangeEvent<unknown>, newValue: number | number[]) => {
+    setNumMathQues(newValue as number);
+  };
+
+  const updateOper = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOperations({ ...operations, [event.target.name]: event.target.checked });
+  };
+
   const whenDrag = (result: DropResult) => {
     if (!result?.destination) return;
 
@@ -130,6 +181,11 @@ export default function Home(): JSX.Element {
 
     setSectionData(items);
   };
+
+  const marks = [];
+  for (let i = 9; i < 60; i = i + 12) {
+    marks.push({ value: i, label: `${i}` });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   resetServerContext();
@@ -176,12 +232,14 @@ export default function Home(): JSX.Element {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}>
-                                    <Chip
-                                      color="primary"
-                                      label={data}
-                                      onDelete={handleDelete(ind)}
-                                      className={classes.chip}
-                                    />
+                                    <Tooltip title="Move to change position in document" placement="top">
+                                      <Chip
+                                        color="primary"
+                                        label={data}
+                                        onDelete={handleDelete(ind)}
+                                        className={classes.chip}
+                                      />
+                                    </Tooltip>
                                   </li>
                                 )}
                               </Draggable>
@@ -196,11 +254,14 @@ export default function Home(): JSX.Element {
                     </Droppable>
                   </DragDropContext>
                 </Grid>
+
                 <Grid item sm={2}>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-label">Section to Add</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
+                      defaultValue=""
+                      value={sectiontoAdd}
                       id="demo-simple-select"
                       disabled={sectionData.length === allAvailableSections.length}
                       onChange={handleChange}>
@@ -235,6 +296,9 @@ export default function Home(): JSX.Element {
                         default:
                           break;
                       }
+                      if (allAvailableSections.filter(val => !sectionData.includes(val)).length !== 0)
+                        setAddingSection(allAvailableSections.filter(val => !sectionData.includes(val))[0]);
+                      else setAddingSection('');
                     }}>
                     Add
                   </Button>
@@ -280,33 +344,104 @@ export default function Home(): JSX.Element {
                 <Typography className={classes.heading}>Math</Typography>
                 <Typography className={classes.secondaryHeading}>View Problems and Adjust Settings</Typography>
               </AccordionSummary>
-              <AccordionDetails>
-                <Box p={1}>
+              <Box p={2}>
+                <AccordionDetails>
                   <Grid container spacing={3}>
-                    <Grid item sm={7}>
-                      <Typography variant="h6">Options</Typography>
-                      <br />
-                      <TextField id="maxNumber" label="Max Number" color="primary" />
-                      <Slider
-                        defaultValue={15}
-                        aria-labelledby="discrete-slider"
-                        valueLabelDisplay="auto"
-                        step={3}
-                        marks
-                        min={9}
-                        max={60}
-                      />
+                    <Grid container item spacing={2} sm={7}>
+                      <Grid item sm={12}>
+                        <Typography variant="h6">Options</Typography>
+                      </Grid>
+                      <Grid item sm={6}>
+                        <TextField
+                          error={maxNumError}
+                          id="maxNumber"
+                          inputRef={maxNumberMath}
+                          label="Max Number"
+                          type="number"
+                        />
+                      </Grid>
+                      <Grid item sm={5}>
+                        <Typography>Number of Questions</Typography>
+                        <Slider
+                          defaultValue={15}
+                          onChange={handleSliderChange}
+                          aria-labelledby="discrete-slider"
+                          valueLabelDisplay="auto"
+                          step={3}
+                          marks={marks}
+                          min={9}
+                          max={60}
+                        />
+                      </Grid>
+                      <Grid item sm={11}>
+                        <Typography>Operations</Typography>
+                        <FormControlLabel
+                          labelPlacement="end"
+                          label="+"
+                          control={
+                            <Checkbox
+                              name="checkedplus"
+                              checked={operations.checkedplus}
+                              onChange={updateOper}
+                              color="default"
+                              inputProps={{ 'aria-label': 'checkbox' }}
+                            />
+                          }
+                        />
+                        <FormControlLabel
+                          labelPlacement="end"
+                          label="-"
+                          control={
+                            <Checkbox
+                              name="checkedminus"
+                              checked={operations.checkedminus}
+                              onChange={updateOper}
+                              color="default"
+                              inputProps={{ 'aria-label': 'checkbox' }}
+                            />
+                          }
+                        />
+                        <FormControlLabel
+                          labelPlacement="end"
+                          label="*"
+                          control={
+                            <Checkbox
+                              name="checkedmulti"
+                              checked={operations.checkedmulti}
+                              onChange={updateOper}
+                              color="default"
+                              inputProps={{ 'aria-label': 'checkbox' }}
+                            />
+                          }
+                        />
+                        <FormControlLabel
+                          labelPlacement="end"
+                          label="/"
+                          control={
+                            <Checkbox
+                              name="checkeddiv"
+                              checked={operations.checkeddiv}
+                              onChange={updateOper}
+                              color="default"
+                              inputProps={{ 'aria-label': 'checkbox' }}
+                            />
+                          }
+                        />
+                      </Grid>
                     </Grid>
                     <Divider orientation="vertical" flexItem />
-                    <Grid item sm={4}>
-                      <Typography variant="h6">Some Questions</Typography>
+                    <Grid container item spacing={2} sm={4} justify="center">
+                      <Grid item sm={10}>
+                        <Typography variant="h6">Questions</Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Box>
-              </AccordionDetails>
+                </AccordionDetails>
+              </Box>
+
               <Divider />
               <AccordionActions>
-                <Button variant="contained" size="small" color="primary">
+                <Button variant="contained" size="small" color="primary" onClick={regenMath}>
                   Regenerate
                 </Button>
               </AccordionActions>
