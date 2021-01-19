@@ -84,7 +84,7 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
     <Box p={3}>
       <Container maxWidth="md">
         <Typography className={classes.formControl} variant="h4">
-          Sections
+          Exercises
         </Typography>
         <Paper className={classes.paper}>
           <Grid container spacing={3}>
