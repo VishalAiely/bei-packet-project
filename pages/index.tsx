@@ -96,22 +96,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function Home(): JSX.Element {
-  const docs = new DocumentGen();
+  const [docs] = React.useState(new DocumentGen());
 
   const gen = async () => {
-    const triviaOps: TriviaOptions = {
-      Difficulty: Difficulty.Easy,
-      NumberofQuestions: 5,
-      Categories: [],
-      StrictCategory: false,
-    };
-
-    const sectionOrder: sections[] = sectionData;
-    docs.setTriviaOptions(triviaOps);
-    await docs.genTriviaQuestions();
-    docs.genMathQuestions();
-    await docs.genReading();
-    docs.makeDoc(sectionOrder);
+    docs.makeDoc(sectionData);
     await docs.downloadDoc();
   };
 
