@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let end: Question;
       const numberofQuests = Options.StrictCategory ? Options.NumberofQuestions : Options.NumberofQuestions / 2;
 
-      while (finalQuestions.length <= numberofQuests && m >= 0) {
+      while (finalQuestions.length <= numberofQuests && m > 0) {
         i = Math.floor(Math.random() * m--);
         finalQuestions.push(categoricalQuestions[i]);
         addedQuestionsIds.add(categoricalQuestions[i].Id);
