@@ -118,25 +118,42 @@ export default function Home(): JSX.Element {
   const getAllCategories = async (): Promise<string[]> => {
     const resp = await fetch(urls.api.triviaCategories);
     const categories = (await resp.json()) as string[];
-    console.log(categories);
     return categories;
   };
 
   const regenTrivia = async () => {
-    if (numberofTriviaQuestions.current == null || Number(numberofTriviaQuestions.current.value) <= 0) {
+    if (
+      numberofTriviaQuestions.current == null ||
+      Number(numberofTriviaQuestions.current.value) <= 0 ||
+      keptQuestions.size >= Number(numberofTriviaQuestions.current.value)
+    ) {
       return;
     }
 
     const newTriviaOptions: TriviaOptions = {
       Difficulty: diff,
       Categories: categories,
-      NumberofQuestions: Number(numberofTriviaQuestions.current.value),
+      NumberofQuestions: Number(numberofTriviaQuestions.current.value) - keptQuestions.size,
       StrictCategory: strictCats,
     };
 
     docs.setTriviaOptions(newTriviaOptions);
 
-    setTriviaQuestions(await docs.genTriviaQuestions());
+    const gotQuestions = await docs.genTriviaQuestions();
+    let newQuestionIndex = 0;
+    const newQuestions: Question[] = [];
+
+    for (let i = 0; i < Number(numberofTriviaQuestions.current.value); i++) {
+      if (i >= gotQuestions.length + keptQuestions.size) break;
+
+      if (keptQuestions.has(i)) newQuestions.push(triviaQuestions[i]);
+      else {
+        newQuestions.push(gotQuestions[newQuestionIndex]);
+        newQuestionIndex++;
+      }
+    }
+
+    setTriviaQuestions(newQuestions);
   };
 
   const regenMath = () => {
@@ -177,6 +194,7 @@ export default function Home(): JSX.Element {
   const [strictCats, setStrictCats] = React.useState<boolean>(false);
 
   const [triviaQuestions, setTriviaQuestions] = React.useState<Question[]>([]);
+  const [keptQuestions] = React.useState<Set<number>>(new Set<number>());
 
   const maxNumberMath = React.useRef<HTMLInputElement>(null);
   const [maxNumError, setmaxNumErr] = React.useState<boolean>(false);
@@ -329,12 +347,12 @@ export default function Home(): JSX.Element {
                       switch (sectiontoAdd) {
                         case 'Trivia':
                           setTExp(true);
-                          await regenTrivia();
+                          if (triviaQuestions.length === 0) await regenTrivia();
                           setAllCategories(await getAllCategories());
                           break;
                         case 'Math':
                           setMExp(true);
-                          regenMath();
+                          if (mathProblems.length === 0) regenMath();
                           break;
                         case 'Reading':
                           setRExp(true);
@@ -474,10 +492,27 @@ export default function Home(): JSX.Element {
                         <Typography variant="h6">Questions</Typography>
                       </Grid>
                       <Grid container item sm={12} style={{ height: 350, overflowY: 'scroll' }} spacing={2}>
-                        {triviaQuestions.map(question => {
+                        {triviaQuestions.map((question, index) => {
                           return (
-                            <Grid key={question.Id} item sm={12}>
-                              <Typography variant="body1">{question.Question}</Typography>
+                            <Grid key={`${question.Id}-${index}`} item sm={12}>
+                              <FormControlLabel
+                                labelPlacement="end"
+                                label={question.Question}
+                                control={
+                                  <Tooltip title="Keep?" placement="top">
+                                    <Checkbox
+                                      id={String(index)}
+                                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (event.target.checked) keptQuestions.add(Number(event.target.id));
+                                        else keptQuestions.delete(Number(event.target.id));
+                                        console.log(keptQuestions);
+                                      }}
+                                      color="default"
+                                      inputProps={{ 'aria-label': 'checkbox' }}
+                                    />
+                                  </Tooltip>
+                                }
+                              />
                             </Grid>
                           );
                         })}
