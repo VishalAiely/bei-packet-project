@@ -4,7 +4,7 @@
 import Head from 'next/head';
 import DocumentGen, { sections } from 'client/document';
 import React from 'react';
-import { Difficulty, TriviaOptions } from 'utils/types/Trivia';
+import { Difficulty, Question, TriviaOptions } from 'utils/types/Trivia';
 import {
   Container,
   AppBar,
@@ -39,9 +39,11 @@ import {
   resetServerContext,
 } from 'react-beautiful-dnd';
 import 'fontsource-roboto';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ExpandMore } from '@material-ui/icons';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { MathOptions, operation } from 'client/math/math-logic';
+import { MathOptions, MathProblem, operation } from 'client/math/math-logic';
+import urls from 'utils/urls';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -113,6 +115,30 @@ export default function Home(): JSX.Element {
     await docs.downloadDoc();
   };
 
+  const getAllCategories = async (): Promise<string[]> => {
+    const resp = await fetch(urls.api.triviaCategories);
+    const categories = (await resp.json()) as string[];
+    console.log(categories);
+    return categories;
+  };
+
+  const regenTrivia = async () => {
+    if (numberofTriviaQuestions.current == null || Number(numberofTriviaQuestions.current.value) <= 0) {
+      return;
+    }
+
+    const newTriviaOptions: TriviaOptions = {
+      Difficulty: diff,
+      Categories: categories,
+      NumberofQuestions: Number(numberofTriviaQuestions.current.value),
+      StrictCategory: strictCats,
+    };
+
+    docs.setTriviaOptions(newTriviaOptions);
+
+    setTriviaQuestions(await docs.genTriviaQuestions());
+  };
+
   const regenMath = () => {
     if (maxNumberMath.current == null || Number(maxNumberMath.current.value) <= 0) {
       setmaxNumErr(true);
@@ -132,7 +158,9 @@ export default function Home(): JSX.Element {
       operations: operators,
     };
 
-    console.log(newMathOptions);
+    docs.setMathOptions(newMathOptions);
+
+    setMathProblems(docs.genMathQuestions());
   };
 
   const classes = useStyles();
@@ -141,9 +169,20 @@ export default function Home(): JSX.Element {
   const [sectionData, setSectionData] = React.useState<sections[]>([]);
   const [sectiontoAdd, setAddingSection] = React.useState<sections>('');
 
+  const [diff, setDiff] = React.useState<Difficulty>(Difficulty.Easy);
+  const numberofTriviaQuestions = React.useRef<HTMLInputElement>(null);
+  const [categories, setCategories] = React.useState<string[]>([]);
+  const categoryToAdd = React.useRef<HTMLInputElement>(null);
+  const [allCategories, setAllCategories] = React.useState<string[]>([]);
+  const [strictCats, setStrictCats] = React.useState<boolean>(false);
+
+  const [triviaQuestions, setTriviaQuestions] = React.useState<Question[]>([]);
+
   const maxNumberMath = React.useRef<HTMLInputElement>(null);
   const [maxNumError, setmaxNumErr] = React.useState<boolean>(false);
   const [numberofMathQuestions, setNumMathQues] = React.useState<number>(15);
+
+  const [mathProblems, setMathProblems] = React.useState<MathProblem[]>([]);
 
   const [operations, setOperations] = React.useState({
     checkedplus: true,
@@ -158,6 +197,10 @@ export default function Home(): JSX.Element {
 
   const handleDelete = (index: number) => () => {
     setSectionData(sections => sections.filter((section, ind) => ind !== index));
+  };
+
+  const handleDeleteCategory = (index: number) => {
+    setCategories(cats => cats.filter((cat, ind) => ind !== index));
   };
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -281,17 +324,21 @@ export default function Home(): JSX.Element {
                     variant="contained"
                     color="primary"
                     disabled={sectionData.length === allAvailableSections.length}
-                    onClick={() => {
+                    onClick={async () => {
                       if (sectiontoAdd !== '') setSectionData([...sectionData, sectiontoAdd]);
                       switch (sectiontoAdd) {
                         case 'Trivia':
                           setTExp(true);
+                          await regenTrivia();
+                          setAllCategories(await getAllCategories());
                           break;
                         case 'Math':
                           setMExp(true);
+                          regenMath();
                           break;
                         case 'Reading':
                           setRExp(true);
+                          await docs.genReading();
                           break;
                         default:
                           break;
@@ -325,12 +372,126 @@ export default function Home(): JSX.Element {
                 <Typography className={classes.heading}>Trivia</Typography>
                 <Typography className={classes.secondaryHeading}>View Questions and Adjust Settings</Typography>
               </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                  blandit leo lobortis eget.
-                </Typography>
-              </AccordionDetails>
+              <Box p={2}>
+                <AccordionDetails>
+                  <Grid container spacing={3}>
+                    <Grid container item spacing={2} sm={5}>
+                      <Grid item sm={12}>
+                        <Typography variant="h6">Options</Typography>
+                      </Grid>
+                      <Grid item sm={12} md={6}>
+                        <FormControl className={classes.formControl}>
+                          <InputLabel id="select-label">Difficulty</InputLabel>
+                          <Select
+                            labelId="diff-label"
+                            value={diff}
+                            id="diff-select"
+                            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                              if (event.target.value) setDiff(event.target.value as Difficulty);
+                            }}>
+                            <MenuItem value={Difficulty.Very_Easy}>Very Easy</MenuItem>
+                            <MenuItem value={Difficulty.Easy}>Easy</MenuItem>
+                            <MenuItem value={Difficulty.Medium}>Medium</MenuItem>
+                            <MenuItem value={Difficulty.Hard}>Hard</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item sm={12} md={6}>
+                        <TextField
+                          defaultValue={5}
+                          id="numberOfTrivia"
+                          inputRef={numberofTriviaQuestions}
+                          label="Question Count"
+                          type="number"
+                        />
+                      </Grid>
+                      <Grid item sm={12}>
+                        <Typography variant="subtitle2">Categories</Typography>
+                      </Grid>
+                      <Grid item sm={12}>
+                        <Paper component="ul" className={classes.chipBox}>
+                          {categories.map((cat, index) => {
+                            return (
+                              <li key={index}>
+                                <Chip
+                                  label={cat}
+                                  className={classes.chip}
+                                  onDelete={() => handleDeleteCategory(index)}
+                                />
+                              </li>
+                            );
+                          })}
+                        </Paper>
+                      </Grid>
+                      <Grid item sm={6}>
+                        <Autocomplete
+                          id="categoryAuto"
+                          options={allCategories}
+                          getOptionLabel={opt => {
+                            const opti = opt as string;
+                            return opti.replace(/\b\w/g, l => l.toUpperCase());
+                          }}
+                          renderInput={params => (
+                            <TextField {...params} label="New Category" variant="outlined" inputRef={categoryToAdd} />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item sm={6}>
+                        <Button
+                          className={classes.downloadButton}
+                          variant="contained"
+                          color="default"
+                          onClick={() => {
+                            if (categoryToAdd.current?.value)
+                              setCategories([...categories, categoryToAdd.current.value]);
+                          }}>
+                          Add
+                        </Button>
+                      </Grid>
+                      <Grid item sm={12}>
+                        <FormControlLabel
+                          labelPlacement="end"
+                          label="From Categories Only"
+                          control={
+                            <Checkbox
+                              name="strictCats"
+                              checked={strictCats}
+                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                setStrictCats(event.target.checked);
+                              }}
+                              color="default"
+                              inputProps={{ 'aria-label': 'checkbox' }}
+                            />
+                          }
+                        />
+                      </Grid>
+                    </Grid>
+                    <Box p={3}>
+                      <Divider orientation="vertical" />
+                    </Box>
+                    <Grid container item sm={6} spacing={2}>
+                      <Grid item sm={12}>
+                        <Typography variant="h6">Questions</Typography>
+                      </Grid>
+                      <Grid container item sm={12} style={{ height: 350, overflowY: 'scroll' }} spacing={2}>
+                        {triviaQuestions.map(question => {
+                          return (
+                            <Grid key={question.Id} item sm={12}>
+                              <Typography variant="body1">{question.Question}</Typography>
+                            </Grid>
+                          );
+                        })}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Box>
+              <Divider />
+              <AccordionActions>
+                <Button variant="contained" size="small" color="primary" onClick={regenTrivia}>
+                  Regenerate
+                </Button>
+              </AccordionActions>
             </Accordion>
             {/*//~ Math Options */}
             <Accordion disabled={!sectionData.includes('Math')} expanded={sectionData.includes('Math') && mExp}>
@@ -354,6 +515,7 @@ export default function Home(): JSX.Element {
                       <Grid item sm={6}>
                         <TextField
                           error={maxNumError}
+                          defaultValue={9}
                           id="maxNumber"
                           inputRef={maxNumberMath}
                           label="Max Number"
@@ -429,11 +591,21 @@ export default function Home(): JSX.Element {
                         />
                       </Grid>
                     </Grid>
-                    <Divider orientation="vertical" flexItem />
+                    <Box p={3}>
+                      <Divider orientation="vertical" />
+                    </Box>
                     <Grid container item spacing={2} sm={4} justify="center">
                       <Grid item sm={10}>
                         <Typography variant="h6">Questions</Typography>
                       </Grid>
+                      {mathProblems.map((question, index) => {
+                        return (
+                          <Grid
+                            key={index}
+                            item
+                            sm={4}>{`${question.firstOperand} ${question.operation} ${question.secondOperand}`}</Grid>
+                        );
+                      })}
                     </Grid>
                   </Grid>
                 </AccordionDetails>
