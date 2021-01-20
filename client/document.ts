@@ -60,6 +60,7 @@ export default class DocumentGenerator {
   // Options and Docs
   private mainDoc: Document;
   private triviaOptions: TriviaOptions;
+  private triviaVerbal: boolean;
   private mathOptions: MathOptions;
 
   // Store Questions
@@ -71,6 +72,7 @@ export default class DocumentGenerator {
     // Initial Setup
     this.mainDoc = new Document();
     this.triviaOptions = triviaOp || defaultTriviaOps;
+    this.triviaVerbal = false;
     this.mathOptions = mathOp || defaultMathOps;
 
     // Initialize Storage of questions
@@ -87,12 +89,24 @@ export default class DocumentGenerator {
     return rows;
   }
 
-  setTriviaOptions(options: TriviaOptions): void {
+  setTriviaOptions(options: TriviaOptions & { triviaVerbal: boolean }): void {
     this.triviaOptions = options;
+    this.triviaVerbal = options.triviaVerbal;
+  }
+
+  getTriviaOptions(): TriviaOptions & { triviaVerbal: boolean } {
+    return {
+      ...this.triviaOptions,
+      triviaVerbal: this.triviaVerbal,
+    };
   }
 
   setMathOptions(options: MathOptions): void {
     this.mathOptions = options;
+  }
+
+  getMathOptions(): MathOptions {
+    return this.mathOptions;
   }
 
   async genTriviaQuestions(): Promise<Question[]> {
@@ -149,31 +163,36 @@ export default class DocumentGenerator {
       });
       questionsParagrpahs.push(para);
       questionsParagrpahs.push(new Paragraph(''));
-      questionsParagrpahs.push(
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [
-            new TextRun({
-              text: '_______________________________________________________',
-              size: 32,
-              bold: true,
-            }),
-          ],
-        })
-      );
-      questionsParagrpahs.push(new Paragraph(''));
-      questionsParagrpahs.push(
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [
-            new TextRun({
-              text: '_______________________________________________________',
-              size: 32,
-              bold: true,
-            }),
-          ],
-        })
-      );
+      if (!this.triviaVerbal) {
+        questionsParagrpahs.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: '_______________________________________________________',
+                size: 32,
+                bold: true,
+              }),
+            ],
+          })
+        );
+      }
+      if (!this.triviaVerbal) {
+        questionsParagrpahs.push(new Paragraph(''));
+        questionsParagrpahs.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: '_______________________________________________________',
+                size: 32,
+                bold: true,
+              }),
+            ],
+          })
+        );
+      }
+
       if (this.triviaQuestions.length !== index) {
         questionsParagrpahs.push(new Paragraph(''));
         questionsParagrpahs.push(new Paragraph(''));
