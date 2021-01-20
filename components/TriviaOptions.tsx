@@ -79,6 +79,13 @@ const Option: FunctionComponent<OptionProps> = ({ classes, docs, disabled, expan
   React.useEffect(() => {
     const gatherInfo = async () => {
       setAllCategories(await getAllCategories());
+      docs.setTriviaOptions({
+        Categories: categories,
+        Difficulty: diff,
+        NumberofQuestions: numberofTriviaQuestions,
+        StrictCategory: strictCats,
+        triviaVerbal: verbal,
+      });
       setTriviaQuestions(await docs.genTriviaQuestions());
     };
     void gatherInfo();
