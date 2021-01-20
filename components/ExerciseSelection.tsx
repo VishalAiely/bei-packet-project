@@ -41,7 +41,6 @@ type SectionOptionsProps = {
   setRExp: React.Dispatch<React.SetStateAction<boolean>>;
 
   // Generate Data
-  regenTrivia: () => Promise<void>;
   regenMath: () => void;
 };
 
@@ -53,7 +52,6 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
   setTExp,
   setMExp,
   setRExp,
-  regenTrivia,
   regenMath,
 }) => {
   const allAvailableSections: sections[] = ['Trivia', 'Math', 'Reading'];
@@ -157,7 +155,6 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                   switch (sectiontoAdd) {
                     case 'Trivia':
                       setTExp(true);
-                      if (docs.triviaQuestions.length === 0) await regenTrivia();
                       break;
                     case 'Math':
                       setMExp(true);
