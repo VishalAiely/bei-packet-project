@@ -86,7 +86,7 @@ const Option: FunctionComponent<OptionProps> = ({ classes, docs, disabled, expan
         StrictCategory: strictCats,
         triviaVerbal: verbal,
       });
-      setTriviaQuestions(await docs.genTriviaQuestions());
+      await regenTrivia();
     };
     void gatherInfo();
   }, []);
