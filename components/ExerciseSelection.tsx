@@ -167,9 +167,7 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                     default:
                       break;
                   }
-                  if (allAvailableSections.filter(val => !sectionData.includes(val)).length !== 0)
-                    setAddingSection(allAvailableSections.filter(val => !sectionData.includes(val))[0]);
-                  else setAddingSection('');
+                  setAddingSection('');
                 }}>
                 Add
               </Button>
