@@ -36,7 +36,7 @@ const Download: FunctionComponent<DownloadProps> = ({ sectionOrder }) => {
                 color="primary"
                 className={classes.downloadButton}
                 onClick={async () => {
-                  docs.makeDoc(sectionOrder);
+                  docs.makeDoc(sectionOrder, true);
                   await docs.downloadDoc();
                 }}>
                 Answers

@@ -10,6 +10,7 @@ import {
   TextRun,
   ITableBordersOptions,
   WidthType,
+  UnderlineType,
 } from 'docx';
 import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
 import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
@@ -177,7 +178,7 @@ export default class DocumentGenerator {
     return this.triviaQuestions;
   }
 
-  makeTriviaSection(): void {
+  makeTriviaSection(withAnswers: boolean): void {
     const questionsParagrpahs: Paragraph[] = [];
     let index = 1;
     let para: Paragraph;
@@ -191,18 +192,24 @@ export default class DocumentGenerator {
         questionsParagrpahs.push(new Paragraph(''));
         questionsParagrpahs.push(
           new Paragraph({
-            alignment: AlignmentType.CENTER,
+            alignment: withAnswers ? AlignmentType.LEFT : AlignmentType.CENTER,
             children: [
               new TextRun({
-                text: '_______________________________________________________',
+                text: `${withAnswers ? ques.Answer : '_______________________________________________________'}`,
                 size: 32,
                 bold: true,
+                underline: withAnswers
+                  ? {
+                      color: 'black',
+                      type: UnderlineType.SINGLE,
+                    }
+                  : undefined,
               }),
             ],
           })
         );
       }
-      if (!this.triviaVerbal) {
+      if (!this.triviaVerbal && !withAnswers) {
         questionsParagrpahs.push(new Paragraph(''));
         questionsParagrpahs.push(
           new Paragraph({
@@ -236,13 +243,26 @@ export default class DocumentGenerator {
         new Paragraph({ children: [new TextRun('')] }),
         new Paragraph({
           alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: 'Please write the question down first then the answer.', size: 32 })],
+          children: [
+            new TextRun({
+              text: `${
+                this.triviaVerbal
+                  ? 'Please read and listen to us read the trivia question and have fun answering it!'
+                  : 'Please write the question down first then the answer.'
+              }`,
+              size: 32,
+            }),
+          ],
         }),
         new Paragraph({
           alignment: AlignmentType.CENTER,
           children: [
             new TextRun({
-              text: 'We are writing it down first because this activates the prefrontal cortex of the brain',
+              text: `${
+                this.triviaVerbal
+                  ? 'If you can’t think of the answer, don’t worry and we will tell you'
+                  : 'We are writing it down first because this activates the prefrontal cortex of the brain'
+              }`,
               size: 32,
             }),
           ],
@@ -254,7 +274,7 @@ export default class DocumentGenerator {
     });
   }
 
-  makeMathSection(): void {
+  makeMathSection(withAnswers: boolean): void {
     const sectionedProblems: Array<TableCell[]> = new Array<TableCell[]>(Math.floor(this.mathQuestions.length / 3));
     for (let i = 0; i < this.mathQuestions.length; i++) {
       const currentQuestion = this.mathQuestions[i];
@@ -267,7 +287,9 @@ export default class DocumentGenerator {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: `${currentQuestion.firstOperand} ${currentQuestion.operation} ${currentQuestion.secondOperand} = `,
+                  text: `${currentQuestion.firstOperand} ${currentQuestion.operation} ${
+                    currentQuestion.secondOperand
+                  } = ${withAnswers ? currentQuestion.answer : ''}`,
                   size: 58,
                 }),
               ],
@@ -427,15 +449,15 @@ export default class DocumentGenerator {
     });
   }
 
-  makeDoc(sectionOrder: sections[]): Document {
+  makeDoc(sectionOrder: sections[], withAnswer = false): Document {
     this.mainDoc = new Document();
 
     const sectionMap = {
       Trivia: () => {
-        this.makeTriviaSection();
+        this.makeTriviaSection(withAnswer);
       },
       Math: () => {
-        this.makeMathSection();
+        this.makeMathSection(withAnswer);
       },
       Reading: () => {
         this.makeReadingSection();
