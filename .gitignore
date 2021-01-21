@@ -30,5 +30,11 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+#credential files
+packet-generator.json
+
+# vscode
+.vscode
+
 # vercel
 .vercel
