@@ -111,6 +111,9 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
             <Grid container item spacing={2} sm={6}>
               <Grid item sm={12}>
                 <Typography variant="h6">Options</Typography>
+                <Box paddingTop={2}>
+                  <Divider />
+                </Box>
               </Grid>
               <Grid item sm={12} md={6}>
                 <FormControl className={classes.formControl}>
@@ -118,7 +121,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   <Select
                     labelId="diff-label"
                     value={diff}
-                    id="diff-select"
+                    id="reading-cagegory-select"
                     onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                       if (event.target.value) {
                         setDiff(event.target.value as Difficulty);
@@ -137,7 +140,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
               </Grid>
               <Grid item sm={12} md={6}>
                 <TextField
-                  id="numberOfTrivia"
+                  id="storyName"
                   error={triviaNumErr}
                   value={numberofTriviaQuestions === 0 ? '' : numberofTriviaQuestions}
                   onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
@@ -263,6 +266,9 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
             <Grid container item sm={5} spacing={2}>
               <Grid item sm={12}>
                 <Typography variant="h6">Questions</Typography>
+                <Box paddingTop={2}>
+                  <Divider />
+                </Box>
               </Grid>
               <Grid container item sm={12} style={{ height: 350, overflowY: 'scroll' }} spacing={2}>
                 {triviaQuestions.map((question, index) => {
@@ -295,7 +301,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
       </Box>
       <Divider />
       <AccordionActions>
-        <Button variant="contained" size="small" disabled={triviaNumErr} color="primary" onClick={regenTrivia}>
+        <Button variant="outlined" size="small" disabled={triviaNumErr} color="inherit" onClick={regenTrivia}>
           Regenerate
         </Button>
       </AccordionActions>
