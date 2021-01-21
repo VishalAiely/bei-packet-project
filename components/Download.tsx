@@ -1,14 +1,15 @@
 import React, { FunctionComponent } from 'react';
-import DocumentGen, { sections } from 'client/document';
+import { sections } from 'client/document';
 import { Box, Button, Container, Grid, Paper, Typography } from '@material-ui/core';
+import AppContext from './AppContext';
 
 type DownloadProps = {
-  classes: Record<string, string>;
-  docs: DocumentGen;
   sectionOrder: sections[];
 };
 
-const Download: FunctionComponent<DownloadProps> = ({ classes, docs, sectionOrder }) => {
+const Download: FunctionComponent<DownloadProps> = ({ sectionOrder }) => {
+  const { docs, classes } = React.useContext(AppContext);
+
   return (
     <Box p={6}>
       <Container maxWidth="xs">

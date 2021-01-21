@@ -65,7 +65,7 @@ export default function Home(): JSX.Element {
             />
           </Options>
 
-          <Download classes={classes} docs={docs} sectionOrder={sectionData} />
+          <Download sectionOrder={sectionData} />
         </Container>
       </AppContext.Provider>
     </React.Fragment>
