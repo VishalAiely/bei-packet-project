@@ -13,6 +13,8 @@ export interface MathProblem {
   answer: number;
 }
 
+const factors = (number: number) => Array.from(Array(number + 1), (_, i) => i).filter(i => number % i === 0);
+
 export function getRandomMathProblem(operations: operation[], maxNumber: number): MathProblem {
   if (operations.length < 1) {
     throw new Error('Not enough operations provided');
@@ -25,17 +27,36 @@ export function getRandomMathProblem(operations: operation[], maxNumber: number)
     answer: NaN,
   };
 
+  let facts: number[] = [];
+
   switch (prob.operation) {
     case '+':
       prob.answer = prob.firstOperand + prob.secondOperand;
       break;
     case '-':
-      prob.answer = prob.firstOperand - prob.firstOperand;
+      [prob.firstOperand, prob.secondOperand] =
+        prob.firstOperand < prob.secondOperand
+          ? [prob.secondOperand, prob.firstOperand]
+          : [prob.firstOperand, prob.secondOperand];
+      prob.answer = prob.firstOperand - prob.secondOperand;
       break;
     case '*':
       prob.answer = prob.firstOperand * prob.secondOperand;
       break;
     case '/':
+      [prob.firstOperand, prob.secondOperand] =
+        prob.firstOperand < prob.secondOperand
+          ? [prob.secondOperand, prob.firstOperand]
+          : [prob.firstOperand, prob.secondOperand];
+
+      if (prob.firstOperand === 1) prob.firstOperand += Math.floor(Math.random() * maxNumber);
+
+      facts = factors(prob.firstOperand);
+      while (facts.length <= 2 && maxNumber > 3) {
+        prob.firstOperand = Math.floor(Math.random() * maxNumber + 1);
+        facts = factors(prob.firstOperand);
+      }
+      prob.secondOperand = facts[Math.floor(Math.random() * facts.length)];
       prob.answer = prob.firstOperand / prob.secondOperand;
       break;
   }

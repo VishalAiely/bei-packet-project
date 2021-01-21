@@ -1,61 +1,73 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
 import DocumentGen, { sections } from 'client/document';
-import { useRef } from 'react';
-import { Difficulty, TriviaOptions } from 'utils/types/Trivia';
+import React from 'react';
+import AppContext from 'components/AppContext';
+import NavBar from 'components/NavBar';
+import Exercises from 'components/ExerciseSelection';
+import Options from 'components/Options';
+import TriviaOptions from 'components/TriviaOptions';
+import MathOptions from 'components/MathOptions';
+import ReadingOptions from 'components/ReadingOptions';
+import Download from 'components/Download';
+import { Container } from '@material-ui/core';
+import 'fontsource-roboto';
+import { useStyles } from 'utils/hooks';
 
-export default function Home() {
-  const diff = useRef<HTMLSelectElement>(null);
-  const triviaNums = useRef<HTMLInputElement>(null);
+export default function Home(): JSX.Element {
+  const [docs] = React.useState(new DocumentGen());
 
-  const gen = async () => {
-    const triviaOps: TriviaOptions = {
-      Difficulty: (diff.current?.value as unknown) as Difficulty,
-      NumberofQuestions: (triviaNums.current?.value || 5) as number,
-      Categories: [],
-      StrictCategory: false,
-    };
+  const classes = useStyles();
 
-    const docs = new DocumentGen(triviaOps);
-    const sectionOrder: sections[] = ['Trivia', 'Math', 'Reading'];
-    await docs.genTriviaQuestions();
-    docs.genMathQuestions();
-    await docs.genReading();
-    docs.makeDoc(sectionOrder);
-    await docs.downloadDoc();
+  const sharedState = {
+    docs: docs,
+    classes: { ...classes },
   };
 
+  const [sectionData, setSectionData] = React.useState<sections[]>([]);
+
+  const [tExp, setTExp] = React.useState<boolean>(false);
+  const [mExp, setMExp] = React.useState<boolean>(false);
+  const [rExp, setRExp] = React.useState<boolean>(false);
+
   return (
-    <div className={styles.container}>
+    <React.Fragment>
       <Head>
-        <title>Create Next App</title>
+        <title>BEI Packet Generator</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <AppContext.Provider value={sharedState}>
+        <Container maxWidth="xl">
+          <NavBar />
 
-      <h2>Trivia</h2>
-      <div>
-        <p>
-          Difficulty:
-          <select ref={diff}>
-            <option value={Difficulty.Very_Easy}>Very Easy</option>
-            <option value={Difficulty.Easy}>Easy</option>
-            <option value={Difficulty.Medium}>Medium</option>
-            <option value={Difficulty.Hard}>Hard</option>
-          </select>
-        </p>
-      </div>
+          <Exercises
+            sectionData={sectionData}
+            setSectionData={setSectionData}
+            setTExp={setTExp}
+            setMExp={setMExp}
+            setRExp={setRExp}
+          />
 
-      <div>
-        <p>
-          Number of Questions: <input ref={triviaNums}></input>
-        </p>
-      </div>
+          <Options classes={classes}>
+            <TriviaOptions
+              disabled={!sectionData.includes('Trivia')}
+              expanded={sectionData.includes('Trivia') && tExp}
+              changeExpanded={setTExp}
+            />
+            <MathOptions
+              disabled={!sectionData.includes('Math')}
+              expanded={sectionData.includes('Math') && mExp}
+              changeExpanded={setMExp}
+            />
+            <ReadingOptions
+              disabled={!sectionData.includes('Reading')}
+              expanded={sectionData.includes('Reading') && rExp}
+              changeExpanded={setRExp}
+            />
+          </Options>
 
-      <main className={styles.main}>
-        <button onClick={gen}>Download</button>
-      </main>
-
-      <footer className={styles.footer}></footer>
-    </div>
+          <Download sectionOrder={sectionData} />
+        </Container>
+      </AppContext.Provider>
+    </React.Fragment>
   );
 }

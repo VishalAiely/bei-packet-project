@@ -33,9 +33,6 @@ yarn-error.log*
 #credential files
 packet-generator.json
 
-# local cache
-cache
-
 # vscode
 .vscode
 
