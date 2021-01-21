@@ -1,28 +1,31 @@
 import { google } from 'googleapis';
 import { auth } from './auth';
-import { questionCacheRefreshTime } from '../globals';
 import fs from 'fs';
+import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
 
-export async function getTriviaQuestions(): Promise<Question[]> {
-  let data: Question[];
+const file = path.resolve('./server', 'cache/questionCache.json');
 
-  try {
-    const stats = fs.statSync('server/cache/questionCache.json');
-    if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
-      throw new Error('Revalidate Cache');
-    } else {
-      data = await getTriviaQuestionsFromCache();
-    }
-  } catch (err) {
-    data = await getTriviaQuestionsFromSheets();
-  }
+export async function getTriviaQuestions(): Promise<Question[]> {
+  const data: Question[] = await getTriviaQuestionsFromCache();
+
+  //! Cannot write to Vercel File system so only get from Cache
+  // try {
+  //   const stats = fs.statSync(file);
+  //   if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
+  //     throw new Error('Revalidate Cache');
+  //   } else {
+  //     data = await getTriviaQuestionsFromCache();
+  //   }
+  // } catch (err) {
+  //   data = await getTriviaQuestionsFromSheets();
+  // }
 
   return data;
 }
 
 async function getTriviaQuestionsFromCache(): Promise<Question[]> {
-  const rawdata = fs.readFileSync('server/cache/questionCache.json');
+  const rawdata = fs.readFileSync(file);
   const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
   return parsedData;
 }
