@@ -38,7 +38,7 @@ export function getRandomMathProblem(operations: operation[], maxNumber: number)
         prob.firstOperand < prob.secondOperand
           ? [prob.secondOperand, prob.firstOperand]
           : [prob.firstOperand, prob.secondOperand];
-      prob.answer = prob.firstOperand - prob.firstOperand;
+      prob.answer = prob.firstOperand - prob.secondOperand;
       break;
     case '*':
       prob.answer = prob.firstOperand * prob.secondOperand;
