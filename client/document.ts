@@ -62,6 +62,8 @@ export default class DocumentGenerator {
   private triviaOptions: TriviaOptions;
   private triviaVerbal: boolean;
   private mathOptions: MathOptions;
+  private readingCategory: string;
+  private storyName: string;
 
   // Store Questions
   public triviaQuestions: Question[];
@@ -74,6 +76,8 @@ export default class DocumentGenerator {
     this.triviaOptions = triviaOp || defaultTriviaOps;
     this.triviaVerbal = false;
     this.mathOptions = mathOp || defaultMathOps;
+    this.readingCategory = '';
+    this.storyName = '';
 
     // Initialize Storage of questions
     this.triviaQuestions = [];
@@ -109,6 +113,14 @@ export default class DocumentGenerator {
     return this.mathOptions;
   }
 
+  setReadingCategory(category: string): void {
+    this.readingCategory = category;
+  }
+
+  setStoryName(name: string): void {
+    this.storyName = name;
+  }
+
   async genTriviaQuestions(): Promise<Question[]> {
     const questions = await fetch(urls.api.trivia, {
       method: 'POST',
@@ -129,8 +141,21 @@ export default class DocumentGenerator {
   }
 
   async genReading(): Promise<Story> {
-    const storyResp = await fetch(urls.api.story);
-    this.storyData = <Story>await storyResp.json();
+    let storyResp: Response;
+    if (this.storyName !== '')
+      storyResp = await fetch(urls.api.storyByName, {
+        method: 'POST',
+        body: this.storyName,
+      });
+    else if (this.readingCategory !== '')
+      storyResp = await fetch(urls.api.randomStoryByCategory, {
+        method: 'POST',
+        body: this.readingCategory,
+      });
+    else storyResp = await fetch(urls.api.story);
+
+    if (storyResp.ok) this.storyData = <Story>await storyResp.json();
+    console.log(this.storyData.category);
     return this.storyData;
   }
 
@@ -323,13 +348,15 @@ export default class DocumentGenerator {
           children: [new TextRun({ text: `By ${this.storyData.author}`, size: 32 })],
         }),
         new Paragraph(''),
-        ...this.storyData.paragraphs.map(para => {
+        ...this.storyData.story.map(para => {
           return new Paragraph({
             spacing: {
               line: 375,
               before: 300,
             },
-            children: [new TextRun({ text: `        ${para}`, size: 28 })],
+            children: para.map(
+              (sentence, ind) => new TextRun({ text: `${ind === 0 ? '         ' : ''} ${sentence}`, size: 28 })
+            ),
           });
         }),
       ],
