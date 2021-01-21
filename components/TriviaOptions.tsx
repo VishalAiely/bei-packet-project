@@ -71,6 +71,7 @@ const Option: FunctionComponent<OptionProps> = ({ classes, docs, disabled, expan
       }
     }
 
+    docs.triviaQuestions = newQuestions;
     setTriviaQuestions(newQuestions);
   };
 
