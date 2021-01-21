@@ -39,9 +39,6 @@ type SectionOptionsProps = {
   setTExp: React.Dispatch<React.SetStateAction<boolean>>;
   setMExp: React.Dispatch<React.SetStateAction<boolean>>;
   setRExp: React.Dispatch<React.SetStateAction<boolean>>;
-
-  // Generate Data
-  regenMath: () => void;
 };
 
 const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
@@ -52,9 +49,8 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
   setTExp,
   setMExp,
   setRExp,
-  regenMath,
 }) => {
-  const allAvailableSections: sections[] = ['Trivia', 'Math', 'Reading'];
+  const allAvailableSections: sections[] = ['Trivia', 'Math', 'Reading', 'Writing'];
   const [sectiontoAdd, setAddingSection] = React.useState<sections>('');
 
   const whenDrag = (result: DropResult) => {
@@ -158,7 +154,6 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                       break;
                     case 'Math':
                       setMExp(true);
-                      if (docs.mathQuestions.length === 0) regenMath();
                       break;
                     case 'Reading':
                       setRExp(true);

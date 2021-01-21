@@ -54,7 +54,7 @@ const emptyBorder: ITableBordersOptions = {
   },
 };
 
-export type sections = 'Trivia' | 'Math' | 'Reading' | '';
+export type sections = 'Trivia' | 'Math' | 'Reading' | 'Writing' | '';
 
 export default class DocumentGenerator {
   // Options and Docs
@@ -162,8 +162,8 @@ export default class DocumentGenerator {
         children: [new TextRun({ text: `${index}. ${ques.Question}`, size: 32, bold: true })],
       });
       questionsParagrpahs.push(para);
-      questionsParagrpahs.push(new Paragraph(''));
       if (!this.triviaVerbal) {
+        questionsParagrpahs.push(new Paragraph(''));
         questionsParagrpahs.push(
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -259,6 +259,26 @@ export default class DocumentGenerator {
       );
     }
 
+    const intructions = new Paragraph({
+      children: [
+        new TextRun({
+          text: 'MATH SECTION:',
+          bold: true,
+          size: 28,
+        }),
+        new TextRun({
+          text:
+            'Do these simple math exercises as fast as you can. Keep track of your time.  Try to finish the math section in 5 minutes.  Regardless of how long it takes you, keep track of your progress and you will see improvement! Your goal is to try to get as close to 2 minute as you can. Do daily, preferably in the morning after eating.',
+          size: 28,
+        }),
+      ],
+    });
+
+    const startTime = new Paragraph({
+      children: [new TextRun({ text: 'Start time:   ___:___', size: 36, bold: true })],
+    });
+    const endTime = new Paragraph({ children: [new TextRun({ text: 'End time:   ___:___', size: 36, bold: true })] });
+
     const table = new Table({
       alignment: AlignmentType.CENTER,
       rows: this.getTableRows(sectionedProblems),
@@ -269,7 +289,20 @@ export default class DocumentGenerator {
       columnWidths: [33, 33, 33],
     });
 
-    this.mainDoc.addSection({ children: [table] });
+    this.mainDoc.addSection({
+      children: [
+        intructions,
+        new Paragraph(''),
+        new Paragraph(''),
+        startTime,
+        new Paragraph(''),
+        new Paragraph(''),
+        table,
+        new Paragraph(''),
+        new Paragraph(''),
+        endTime,
+      ],
+    });
   }
 
   makeReadingSection(): void {
@@ -293,10 +326,75 @@ export default class DocumentGenerator {
         ...this.storyData.paragraphs.map(para => {
           return new Paragraph({
             spacing: {
-              before: 200,
+              line: 375,
+              before: 300,
             },
-            children: [new TextRun({ text: para, size: 28 })],
+            children: [new TextRun({ text: `        ${para}`, size: 28 })],
           });
+        }),
+      ],
+    });
+  }
+
+  makeSentenceSection(): void {
+    this.mainDoc.addSection({
+      children: [
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: 'Write a sentence:',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        }),
+        new Paragraph(''),
+        new Paragraph(''),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        }),
+        new Paragraph(''),
+        new Paragraph(''),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        }),
+        new Paragraph(''),
+        new Paragraph(''),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
+        }),
+        new Paragraph(''),
+        new Paragraph(''),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new TextRun({
+              text: '_______________________________________________________',
+              size: 32,
+              bold: true,
+            }),
+          ],
         }),
       ],
     });
@@ -315,6 +413,9 @@ export default class DocumentGenerator {
       Reading: () => {
         this.makeReadingSection();
       },
+      Writing: () => {
+        this.makeSentenceSection();
+      },
       '': () => {
         console.log('no section');
       },
@@ -329,6 +430,6 @@ export default class DocumentGenerator {
 
   async downloadDoc(): Promise<void> {
     const blob = await Packer.toBlob(this.mainDoc);
-    saveAs(blob, 'QuestionPacket.docx');
+    saveAs(blob, `QuestionPacket-().docx`);
   }
 }
