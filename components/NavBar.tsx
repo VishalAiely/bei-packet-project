@@ -12,6 +12,12 @@ const NavBar: FunctionComponent = () => {
           <Typography variant="h5" className={classes?.title}>
             Brain Exercise Initiative Packet Generator
           </Typography>
+          <Typography variant="h6">
+            By{' '}
+            <a href="https://github.com/VishalAiely" style={{ color: '#fff', textDecoration: 'none' }}>
+              Vishal Aiely
+            </a>
+          </Typography>
         </Toolbar>
       </AppBar>
     </Box>
