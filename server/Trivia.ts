@@ -3,23 +3,23 @@ import { auth } from './auth';
 import fs from 'fs';
 import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
+import { questionCacheRefreshTime } from 'globals';
 
 const file = path.resolve('./server', 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
-  const data: Question[] = await getTriviaQuestionsFromCache();
+  let data: Question[];
 
-  //! Cannot write to Vercel File system so only get from Cache
-  // try {
-  //   const stats = fs.statSync(file);
-  //   if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
-  //     throw new Error('Revalidate Cache');
-  //   } else {
-  //     data = await getTriviaQuestionsFromCache();
-  //   }
-  // } catch (err) {
-  //   data = await getTriviaQuestionsFromSheets();
-  // }
+  try {
+    const stats = fs.statSync(file);
+    if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
+      throw new Error('Revalidate Cache');
+    } else {
+      data = await getTriviaQuestionsFromCache();
+    }
+  } catch (err) {
+    data = await getTriviaQuestionsFromSheets();
+  }
 
   return data;
 }
@@ -91,13 +91,9 @@ async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
 
   const json = JSON.stringify(typedQuestions);
 
-  fs.writeFile('server/cache/questionCache.json', json, err => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
-  });
+  fs.writeFileSync(file, json);
+
+  console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
 
   return typedQuestions;
 }
