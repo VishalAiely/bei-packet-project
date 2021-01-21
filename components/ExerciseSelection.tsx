@@ -22,15 +22,10 @@ import {
   DropResult,
   resetServerContext,
 } from 'react-beautiful-dnd';
-import DocumentGen, { sections } from 'client/document';
+import { sections } from 'client/document';
+import AppContext from 'components/AppContext';
 
 type SectionOptionsProps = {
-  // Styles
-  classes: Record<string, string>;
-
-  // Main Document
-  docs: DocumentGen;
-
   // Main Sections
   sectionData: sections[];
   setSectionData: React.Dispatch<React.SetStateAction<sections[]>>;
@@ -42,14 +37,14 @@ type SectionOptionsProps = {
 };
 
 const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
-  classes,
-  docs,
   sectionData,
   setSectionData,
   setTExp,
   setMExp,
   setRExp,
 }) => {
+  const { classes, docs } = React.useContext(AppContext);
+
   const allAvailableSections: sections[] = ['Trivia', 'Math', 'Reading', 'Writing'];
   const [sectiontoAdd, setAddingSection] = React.useState<sections>('');
 

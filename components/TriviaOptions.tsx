@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import DocumentGen from 'client/document';
 import {
   Accordion,
   AccordionActions,
@@ -25,6 +24,7 @@ import { ExpandMore } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
 import { Difficulty, Question } from 'utils/types/Trivia';
 import urls from 'utils/urls';
+import AppContext from './AppContext';
 
 // gets all valid categories from API
 const getAllCategories = async (): Promise<string[]> => {
@@ -34,14 +34,15 @@ const getAllCategories = async (): Promise<string[]> => {
 };
 
 type OptionProps = {
-  classes: Record<string, string>;
-  docs: DocumentGen;
   disabled: boolean;
   expanded: boolean;
   changeExpanded: (value: React.SetStateAction<boolean>) => void;
 };
 
-const Option: FunctionComponent<OptionProps> = ({ classes, docs, disabled, expanded, changeExpanded }) => {
+const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpanded }) => {
+  // Global State
+  const { docs, classes } = React.useContext(AppContext);
+
   // States to manage for options
   const [diff, setDiff] = React.useState<Difficulty>(Difficulty.Easy);
   const [numberofTriviaQuestions, setNumberofTriviaQuestions] = React.useState<number>(5);

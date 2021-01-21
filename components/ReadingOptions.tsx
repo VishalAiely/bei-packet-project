@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import DocumentGen from 'client/document';
 import {
   Accordion,
   AccordionActions,
@@ -12,22 +11,17 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
+import AppContext from './AppContext';
 
 type ReadingOptionsProps = {
-  classes: Record<string, string>;
-  docs: DocumentGen;
   disabled: boolean;
   expanded: boolean;
   changeExpanded: (value: React.SetStateAction<boolean>) => void;
 };
 
-const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({
-  classes,
-  docs,
-  disabled,
-  expanded,
-  changeExpanded,
-}) => {
+const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({ disabled, expanded, changeExpanded }) => {
+  // Global State
+  const { classes } = React.useContext(AppContext);
   return (
     <Accordion disabled={disabled} expanded={expanded}>
       <AccordionSummary

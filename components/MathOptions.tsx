@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import DocumentGen from 'client/document';
 import {
   Accordion,
   AccordionActions,
@@ -18,10 +17,9 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { MathProblem, operation } from 'client/math/math-logic';
+import AppContext from './AppContext';
 
 type MathOptionsProps = {
-  classes: Record<string, string>;
-  docs: DocumentGen;
   disabled: boolean;
   expanded: boolean;
   changeExpanded: (value: React.SetStateAction<boolean>) => void;
@@ -32,7 +30,10 @@ for (let i = 9; i < 60; i = i + 12) {
   marks.push({ value: i, label: `${i}` });
 }
 
-const MathOptions: FunctionComponent<MathOptionsProps> = ({ classes, docs, disabled, expanded, changeExpanded }) => {
+const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, changeExpanded }) => {
+  // Global State
+  const { docs, classes } = React.useContext(AppContext);
+
   // States for math options
   const [maxNumError, setMaxNumErr] = React.useState<boolean>(false);
   const [maxNumberMath, setMaxNumberMath] = React.useState<number>(5);
