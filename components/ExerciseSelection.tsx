@@ -138,8 +138,8 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
             <Grid item sm={2}>
               <Button
                 className={classes.menuButton}
-                variant="contained"
-                color="primary"
+                variant="outlined"
+                color="inherit"
                 disabled={sectionData.length === allAvailableSections.length}
                 onClick={async () => {
                   if (sectiontoAdd !== '') setSectionData([...sectionData, sectiontoAdd]);

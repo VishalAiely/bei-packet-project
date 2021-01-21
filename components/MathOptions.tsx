@@ -73,6 +73,9 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
             <Grid container item spacing={2} sm={7}>
               <Grid item sm={12}>
                 <Typography variant="h6">Options</Typography>
+                <Box paddingTop={2}>
+                  <Divider />
+                </Box>
               </Grid>
               <Grid item sm={6}>
                 <TextField
@@ -226,9 +229,12 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
             <Box p={3}>
               <Divider orientation="vertical" />
             </Box>
-            <Grid container item spacing={2} sm={4} justify="center">
+            <Grid container item spacing={2} sm={4}>
               <Grid item sm={10}>
-                <Typography variant="h6">Questions</Typography>
+                <Typography variant="h6">Problems</Typography>
+                <Box paddingTop={2}>
+                  <Divider />
+                </Box>
               </Grid>
               {mathProblems.map((question, index) => {
                 return (
@@ -246,9 +252,9 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
       <Divider />
       <AccordionActions>
         <Button
-          variant="contained"
+          variant="outlined"
           size="small"
-          color="primary"
+          color="inherit"
           disabled={maxNumError || !mathOperations.length}
           onClick={regenMath}>
           Regenerate
