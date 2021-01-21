@@ -12,7 +12,7 @@ export interface Story {
 export type StoryCache = Record<string, Story>;
 
 export function getRandomStory(): Story {
-  const rawdata = fs.readFileSync('server/cache/storyData2.json');
+  const rawdata = fs.readFileSync('server/cache/storyData.json');
   const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
   const keys = Object.keys(parsedData);
   const randomStoryIndex = Math.floor(Math.random() * keys.length);
@@ -27,13 +27,13 @@ export function getRandomStoryByCategory(category: string): Story {
   const allStoriesofCategory = parsedData[category];
   const randomStory = allStoriesofCategory[Math.floor(Math.random() * allStoriesofCategory.length)];
 
-  const rawStories = fs.readFileSync('server/cache/storyData2.json');
+  const rawStories = fs.readFileSync('server/cache/storyData.json');
   const parsedStories = JSON.parse(rawStories.toString()) as Record<string, Story>;
   return parsedStories[randomStory];
 }
 
 export function getStoryByName(title: string): Story {
-  const rawdata = fs.readFileSync('server/cache/storyData2.json');
+  const rawdata = fs.readFileSync('server/cache/storyData.json');
   const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
   if (!parsedData[title]) throw new Error('Story Does not exist');
 
@@ -41,7 +41,7 @@ export function getStoryByName(title: string): Story {
 }
 
 export function getAllStoryNames(): Array<string> {
-  const rawdata = fs.readFileSync('server/cache/storyData2.json');
+  const rawdata = fs.readFileSync('server/cache/storyData.json');
   const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
   return Object.keys(parsedData);
 }
