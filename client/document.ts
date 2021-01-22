@@ -320,7 +320,7 @@ export default class DocumentGenerator {
     const intructions = new Paragraph({
       children: [
         new TextRun({
-          text: 'MATH SECTION:',
+          text: 'MATH SECTION: ',
           bold: true,
           size: 28,
         }),

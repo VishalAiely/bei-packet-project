@@ -6,7 +6,7 @@ const NavBar: FunctionComponent = () => {
   const { classes } = React.useContext(AppContext);
 
   return (
-    <AppBar position="static" color="transparent" style={{ marginTop: 70, paddingBottom: 20 }}>
+    <AppBar position="static" color="transparent" style={{ marginTop: 70 }}>
       <Toolbar>
         <Typography variant="body2" className={classes?.title} style={{ marginLeft: 50 }}>
           Partnered with{' '}
