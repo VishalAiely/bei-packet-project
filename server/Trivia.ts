@@ -8,18 +8,18 @@ import { questionCacheRefreshTime } from 'globals';
 const file = path.resolve('./server', 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
-  let data: Question[];
+  let data: Question[] = await getTriviaQuestionsFromSheets();
 
-  try {
-    const stats = fs.statSync(file);
-    if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
-      throw new Error('Revalidate Cache');
-    } else {
-      data = await getTriviaQuestionsFromCache();
-    }
-  } catch (err) {
-    data = await getTriviaQuestionsFromSheets();
-  }
+  // try {
+  //   const stats = fs.statSync(file);
+  //   if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
+  //     throw new Error('Revalidate Cache');
+  //   } else {
+  //     data = await getTriviaQuestionsFromCache();
+  //   }
+  // } catch (err) {
+  //   data = await getTriviaQuestionsFromSheets();
+  // }
 
   return data;
 }
