@@ -9,6 +9,7 @@ import TriviaOptions from 'components/TriviaOptions';
 import MathOptions from 'components/MathOptions';
 import ReadingOptions from 'components/ReadingOptions';
 import Download from 'components/Download';
+import Footer from 'components/Footer';
 import { Container } from '@material-ui/core';
 import 'fontsource-roboto';
 import { useStyles } from 'utils/hooks';
@@ -36,7 +37,7 @@ export default function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <AppContext.Provider value={sharedState}>
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" style={{ paddingBottom: 60 }}>
           <NavBar />
 
           <Exercises
@@ -67,6 +68,7 @@ export default function Home(): JSX.Element {
 
           <Download sectionOrder={sectionData} />
         </Container>
+        <Footer />
       </AppContext.Provider>
     </React.Fragment>
   );
