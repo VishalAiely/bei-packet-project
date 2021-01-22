@@ -93,12 +93,12 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
         </Typography>
         <Paper className={classes.paper}>
           <Grid container spacing={3}>
-            <Grid item sm={1}>
+            {/* <Grid item sm={1}>
               <Box paddingTop={1}>
                 <Typography variant="h6">Order:</Typography>
               </Box>
-            </Grid>
-            <Grid item sm={8}>
+            </Grid> */}
+            <Grid item sm={9}>
               <DragDropContext onDragEnd={whenDrag}>
                 <Droppable droppableId="sections" direction="horizontal">
                   {(provided: DroppableProvided) => (
