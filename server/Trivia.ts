@@ -1,10 +1,10 @@
 import { google } from 'googleapis';
 import { auth } from './auth';
-import fs from 'fs';
-import path from 'path';
+//import fs from 'fs';
+//import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
 
-const file = path.resolve('./server', 'cache/questionCache.json');
+//const file = path.resolve('./server', 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
   const data: Question[] = await getTriviaQuestionsFromSheets();
@@ -88,11 +88,11 @@ export async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
       };
     }) || [];
 
-  const json = JSON.stringify(typedQuestions);
+  // const json = JSON.stringify(typedQuestions);
 
-  fs.writeFileSync(file, json);
+  // fs.writeFileSync(file, json);
 
-  console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
+  // console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
 
   return typedQuestions;
 }
