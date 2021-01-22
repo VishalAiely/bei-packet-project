@@ -108,14 +108,14 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
       <Box p={2}>
         <AccordionDetails>
           <Grid container spacing={3}>
-            <Grid container item spacing={2} sm={6}>
-              <Grid item sm={12}>
+            <Grid container item spacing={2} sm={12} md={6}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="h6">Options</Typography>
                 <Box paddingTop={2}>
                   <Divider />
                 </Box>
               </Grid>
-              <Grid item sm={12} md={6}>
+              <Grid item xs={6} sm={6} md={6}>
                 <FormControl className={classes.formControl}>
                   <InputLabel id="select-label">Difficulty</InputLabel>
                   <Select
@@ -138,9 +138,9 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item sm={12} md={6}>
+              <Grid item xs={6} sm={6} md={6}>
                 <TextField
-                  id="storyName"
+                  id="triviaNUms"
                   error={triviaNumErr}
                   value={numberofTriviaQuestions === 0 ? '' : numberofTriviaQuestions}
                   onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
@@ -164,10 +164,10 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   type="number"
                 />
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2">Categories</Typography>
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12}>
                 <Paper component="ul" className={classes.chipBox}>
                   {categories.map((cat, index) => {
                     return (
@@ -189,7 +189,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   })}
                 </Paper>
               </Grid>
-              <Grid item sm={6}>
+              <Grid item xs={8} sm={6}>
                 <Autocomplete
                   id="categoryAuto"
                   options={allCategories}
@@ -199,7 +199,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   )}
                 />
               </Grid>
-              <Grid item sm={6}>
+              <Grid item xs={4} sm={6}>
                 <Button
                   className={classes.downloadButton}
                   variant="contained"
@@ -263,8 +263,8 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
             <Box p={3}>
               <Divider orientation="vertical" />
             </Box>
-            <Grid container item sm={5} spacing={2}>
-              <Grid item sm={12}>
+            <Grid container item sm={12} md={5} spacing={2}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="h6">Questions</Typography>
                 <Box paddingTop={2}>
                   <Divider />
