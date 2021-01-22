@@ -18,6 +18,7 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import { MathProblem, operation } from 'client/math/math-logic';
 import AppContext from './AppContext';
+import { operationSymbols } from 'client/document';
 
 type MathOptionsProps = {
   disabled: boolean;
@@ -148,7 +149,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
                 />
                 <FormControlLabel
                   labelPlacement="end"
-                  label="-"
+                  label="－"
                   control={
                     <Checkbox
                       name="checkedminus"
@@ -174,7 +175,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
                 />
                 <FormControlLabel
                   labelPlacement="end"
-                  label="*"
+                  label="×"
                   control={
                     <Checkbox
                       name="checkedmulti"
@@ -200,7 +201,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
                 />
                 <FormControlLabel
                   labelPlacement="end"
-                  label="/"
+                  label="÷"
                   control={
                     <Checkbox
                       name="checkeddiv"
@@ -238,10 +239,9 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
               </Grid>
               {mathProblems.map((question, index) => {
                 return (
-                  <Grid
-                    key={index}
-                    item
-                    sm={4}>{`${question.firstOperand} ${question.operation} ${question.secondOperand}`}</Grid>
+                  <Grid key={index} item sm={4}>{`${question.firstOperand} ${
+                    question.operation === '*' ? operationSymbols[question.operation] : question.operation
+                  } ${question.secondOperand}`}</Grid>
                 );
               })}
             </Grid>

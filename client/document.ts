@@ -13,10 +13,18 @@ import {
   UnderlineType,
 } from 'docx';
 import { TriviaOptions, Question, Difficulty } from 'utils/types/Trivia';
-import { MathOptions, MathProblem, getAllRandomMathProblems } from 'client/math/math-logic';
+import { MathOptions, MathProblem, getAllRandomMathProblems, operation } from 'client/math/math-logic';
 import { saveAs } from 'file-saver';
 import urls from 'utils/urls';
 import { Story } from 'server/Story';
+
+// For Math Printing
+export const operationSymbols: Record<operation, string> = {
+  '+': '+',
+  '-': '-',
+  '*': '×',
+  '/': '÷',
+};
 
 // Default Options
 const defaultMathOps: MathOptions = {
@@ -188,7 +196,7 @@ export default class DocumentGenerator {
         children: [new TextRun({ text: `${index}. ${ques.Question}`, size: 32, bold: true })],
       });
       questionsParagrpahs.push(para);
-      if (!this.triviaVerbal) {
+      if (!this.triviaVerbal || withAnswers) {
         questionsParagrpahs.push(new Paragraph(''));
         questionsParagrpahs.push(
           new Paragraph({
@@ -284,13 +292,16 @@ export default class DocumentGenerator {
         new TableCell({
           children: [
             new Paragraph({
-              alignment: AlignmentType.CENTER,
+              alignment: withAnswers ? AlignmentType.LEFT : AlignmentType.RIGHT,
+              spacing: {
+                line: 300,
+              },
               children: [
                 new TextRun({
-                  text: `${currentQuestion.firstOperand} ${currentQuestion.operation} ${
+                  text: `${currentQuestion.firstOperand} ${operationSymbols[currentQuestion.operation]} ${
                     currentQuestion.secondOperand
                   } = ${withAnswers ? currentQuestion.answer : ''}`,
-                  size: 58,
+                  size: withAnswers ? 48 : 58,
                 }),
               ],
             }),
