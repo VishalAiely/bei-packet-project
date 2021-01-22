@@ -10,7 +10,6 @@ import {
   Chip,
   FormControl,
   Select,
-  Button,
   MenuItem,
   InputLabel,
 } from '@material-ui/core';
@@ -62,8 +61,25 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
     setSectionData(sections => sections.filter((section, ind) => ind !== index));
   };
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (event.target.value) setAddingSection(event.target.value as sections);
+  const handleChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
+    if (event.target.value) {
+      setSectionData([...sectionData, event.target.value as sections]);
+      switch (event.target.value as sections) {
+        case 'Trivia':
+          setTExp(true);
+          break;
+        case 'Math':
+          setMExp(true);
+          break;
+        case 'Reading':
+          setRExp(true);
+          await docs.genReading();
+          break;
+        default:
+          break;
+      }
+      setAddingSection('');
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -77,7 +93,12 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
         </Typography>
         <Paper className={classes.paper}>
           <Grid container spacing={3}>
-            <Grid item sm={8}>
+            {/* <Grid item sm={1}>
+              <Box paddingTop={1}>
+                <Typography variant="h6">Order:</Typography>
+              </Box>
+            </Grid> */}
+            <Grid item xs={12} sm={12} md={9}>
               <DragDropContext onDragEnd={whenDrag}>
                 <Droppable droppableId="sections" direction="horizontal">
                   {(provided: DroppableProvided) => (
@@ -115,8 +136,8 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
               </DragDropContext>
             </Grid>
 
-            <Grid item sm={2}>
-              <FormControl className={classes.formControl}>
+            <Grid container item justify="center" sm={12} md={3}>
+              <FormControl className={classes.formControl} style={{ marginTop: -5 }}>
                 <InputLabel id="demo-simple-select-label">Section to Add</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -135,7 +156,7 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item sm={2}>
+            {/* <Grid item sm={2}>
               <Button
                 className={classes.menuButton}
                 variant="outlined"
@@ -161,7 +182,7 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                 }}>
                 Add
               </Button>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Paper>
       </Container>

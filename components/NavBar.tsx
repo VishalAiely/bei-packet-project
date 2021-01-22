@@ -7,14 +7,18 @@ const NavBar: FunctionComponent = () => {
 
   return (
     <Box p={3}>
-      <AppBar position="static" color="default">
+      <AppBar position="fixed" color="primary">
         <Toolbar>
           <Typography variant="h5" className={classes?.title}>
             Brain Exercise Initiative Packet Generator
           </Typography>
           <Typography variant="h6">
             By{' '}
-            <a href="https://github.com/VishalAiely" style={{ color: '#fff', textDecoration: 'none' }}>
+            <a
+              href="https://github.com/VishalAiely"
+              style={{ color: '#fff', textDecoration: 'none' }}
+              target="_blank"
+              rel="noreferrer">
               Vishal Aiely
             </a>
           </Typography>

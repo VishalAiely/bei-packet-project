@@ -9,7 +9,6 @@ const file = path.resolve('./server', 'cache/questionCache.json');
 export async function getTriviaQuestions(): Promise<Question[]> {
   const data: Question[] = await getTriviaQuestionsFromCache();
 
-  //! Cannot write to Vercel File system so only get from Cache
   // try {
   //   const stats = fs.statSync(file);
   //   if (!stats == undefined || new Date().getTime() > new Date(stats.ctime).getTime() + questionCacheRefreshTime) {
@@ -33,7 +32,7 @@ async function getTriviaQuestionsFromCache(): Promise<Question[]> {
 /**
  * Fetches the question data from google sheets and caches the results
  */
-async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
+export async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
   const sheetsApi = google.sheets({ version: 'v4' });
 
   const {
@@ -91,13 +90,9 @@ async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
 
   const json = JSON.stringify(typedQuestions);
 
-  fs.writeFile('server/cache/questionCache.json', json, err => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
-  });
+  fs.writeFileSync(file, json);
+
+  console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
 
   return typedQuestions;
 }
