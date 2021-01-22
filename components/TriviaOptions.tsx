@@ -116,7 +116,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                 </Box>
               </Grid>
               <Grid item xs={6} sm={6} md={6}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} style={{ minWidth: 70 }}>
                   <InputLabel id="select-label">Difficulty</InputLabel>
                   <Select
                     labelId="diff-label"
@@ -189,7 +189,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   })}
                 </Paper>
               </Grid>
-              <Grid item xs={8} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <Autocomplete
                   id="categoryAuto"
                   options={allCategories}
@@ -199,7 +199,7 @@ const Option: FunctionComponent<OptionProps> = ({ disabled, expanded, changeExpa
                   )}
                 />
               </Grid>
-              <Grid item xs={4} sm={6}>
+              <Grid item xs={12} sm={6} justify="center">
                 <Button
                   className={classes.downloadButton}
                   variant="contained"
