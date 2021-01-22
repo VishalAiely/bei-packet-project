@@ -68,14 +68,14 @@ const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({ disabled, expa
       <Box p={2}>
         <AccordionDetails>
           <Grid container spacing={3}>
-            <Grid container item spacing={2} sm={4}>
-              <Grid item sm={12}>
+            <Grid container item spacing={2} xs={12} sm={4}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="h6">Options</Typography>
                 <Box paddingTop={2}>
                   <Divider />
                 </Box>
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12}>
                 <Autocomplete
                   id="categoryautoStory"
                   value={category}
@@ -94,7 +94,7 @@ const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({ disabled, expa
                   renderInput={params => <TextField {...params} label="Category" variant="outlined" />}
                 />
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12}>
                 <Autocomplete
                   id="storyName"
                   value={storyName}
@@ -110,14 +110,14 @@ const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({ disabled, expa
             <Box p={3}>
               <Divider orientation="vertical" />
             </Box>
-            <Grid container item spacing={2} sm={7} justify="center">
-              <Grid item sm={12}>
+            <Grid container item spacing={2} xs={12} sm={7} justify="center">
+              <Grid item xs={12} sm={12} justify="center">
                 <Typography variant="h6">Reading Passage</Typography>
                 <Box paddingTop={2}>
                   <Divider />
                 </Box>
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12} justify="center">
                 <a
                   href={storyData.link}
                   target="_blank"
@@ -127,14 +127,14 @@ const ReadingOptions: FunctionComponent<ReadingOptionsProps> = ({ disabled, expa
                 </a>
               </Grid>
               {storyData.author !== '' && (
-                <Grid item sm={12}>
+                <Grid item xs={12} sm={12} justify="center">
                   <Typography variant="subtitle1">{`by ${storyData.author}`}</Typography>
                 </Grid>
               )}
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12} justify="center">
                 <img src={storyData.image} alt="Story" width={225}></img>
               </Grid>
-              <Grid item sm={12}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2">{`Paragraphs: ${storyData.story.length}`}</Typography>
               </Grid>
             </Grid>

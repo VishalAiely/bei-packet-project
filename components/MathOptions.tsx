@@ -71,14 +71,14 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
       <Box p={2}>
         <AccordionDetails>
           <Grid container spacing={3}>
-            <Grid container item spacing={2} sm={7}>
-              <Grid item sm={12}>
+            <Grid container item spacing={2} xs={12} sm={7}>
+              <Grid item xs={12} sm={12}>
                 <Typography variant="h6">Options</Typography>
                 <Box paddingTop={2}>
                   <Divider />
                 </Box>
               </Grid>
-              <Grid item sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   error={maxNumError}
                   value={maxNumberMath === 0 ? '' : maxNumberMath}
@@ -100,7 +100,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
                   type="number"
                 />
               </Grid>
-              <Grid item sm={5}>
+              <Grid item xs={12} sm={6}>
                 <Typography>Number of Questions</Typography>
                 <Slider
                   defaultValue={numMathQues}
@@ -119,7 +119,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
                   max={60}
                 />
               </Grid>
-              <Grid item sm={11}>
+              <Grid item xs={12} sm={12}>
                 <Typography>Operations</Typography>
                 <FormControlLabel
                   labelPlacement="end"
@@ -230,8 +230,8 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
             <Box p={3}>
               <Divider orientation="vertical" />
             </Box>
-            <Grid container item spacing={2} sm={4}>
-              <Grid item sm={10}>
+            <Grid container item spacing={2} xs={12} sm={4}>
+              <Grid item xs={12} sm={10}>
                 <Typography variant="h6">Problems</Typography>
                 <Box paddingTop={2}>
                   <Divider />
@@ -239,7 +239,7 @@ const MathOptions: FunctionComponent<MathOptionsProps> = ({ disabled, expanded, 
               </Grid>
               {mathProblems.map((question, index) => {
                 return (
-                  <Grid key={index} item sm={4}>{`${question.firstOperand} ${
+                  <Grid key={index} item xs={4} sm={6} md={4}>{`${question.firstOperand} ${
                     question.operation === '*' ? operationSymbols[question.operation] : question.operation
                   } ${question.secondOperand}`}</Grid>
                 );
