@@ -3,12 +3,11 @@ import { auth } from './auth';
 import fs from 'fs';
 import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
-import { questionCacheRefreshTime } from 'globals';
 
 const file = path.resolve('./server', 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
-  let data: Question[] = await getTriviaQuestionsFromSheets();
+  const data: Question[] = await getTriviaQuestionsFromSheets();
 
   // try {
   //   const stats = fs.statSync(file);
@@ -24,11 +23,11 @@ export async function getTriviaQuestions(): Promise<Question[]> {
   return data;
 }
 
-async function getTriviaQuestionsFromCache(): Promise<Question[]> {
-  const rawdata = fs.readFileSync(file);
-  const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
-  return parsedData;
-}
+// async function getTriviaQuestionsFromCache(): Promise<Question[]> {
+//   const rawdata = fs.readFileSync(file);
+//   const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
+//   return parsedData;
+// }
 
 /**
  * Fetches the question data from google sheets and caches the results
