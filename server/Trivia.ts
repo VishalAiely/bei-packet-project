@@ -1,13 +1,13 @@
 import { google } from 'googleapis';
 import { auth } from './auth';
-//import fs from 'fs';
-//import path from 'path';
+import fs from 'fs';
+import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
 
-//const file = path.resolve('./server', 'cache/questionCache.json');
+const file = path.resolve('./server', 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
-  const data: Question[] = await getTriviaQuestionsFromSheets();
+  const data: Question[] = await getTriviaQuestionsFromCache();
 
   // try {
   //   const stats = fs.statSync(file);
@@ -23,11 +23,11 @@ export async function getTriviaQuestions(): Promise<Question[]> {
   return data;
 }
 
-// async function getTriviaQuestionsFromCache(): Promise<Question[]> {
-//   const rawdata = fs.readFileSync(file);
-//   const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
-//   return parsedData;
-// }
+async function getTriviaQuestionsFromCache(): Promise<Question[]> {
+  const rawdata = fs.readFileSync(file);
+  const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
+  return parsedData;
+}
 
 /**
  * Fetches the question data from google sheets and caches the results
@@ -88,11 +88,11 @@ export async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
       };
     }) || [];
 
-  // const json = JSON.stringify(typedQuestions);
+  const json = JSON.stringify(typedQuestions);
 
-  // fs.writeFileSync(file, json);
+  fs.writeFileSync(file, json);
 
-  // console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
+  console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
 
   return typedQuestions;
 }
