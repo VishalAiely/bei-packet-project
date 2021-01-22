@@ -98,7 +98,7 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
                 <Typography variant="h6">Order:</Typography>
               </Box>
             </Grid> */}
-            <Grid item sm={9}>
+            <Grid item xs={12} sm={12} md={9}>
               <DragDropContext onDragEnd={whenDrag}>
                 <Droppable droppableId="sections" direction="horizontal">
                   {(provided: DroppableProvided) => (
@@ -136,8 +136,8 @@ const SectionOptions: FunctionComponent<SectionOptionsProps> = ({
               </DragDropContext>
             </Grid>
 
-            <Grid item sm={3}>
-              <FormControl className={classes.formControl}>
+            <Grid container item justify="center" sm={12} md={3}>
+              <FormControl className={classes.formControl} style={{ marginTop: -5 }}>
                 <InputLabel id="demo-simple-select-label">Section to Add</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
