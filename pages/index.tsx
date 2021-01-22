@@ -37,7 +37,7 @@ export default function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <AppContext.Provider value={sharedState}>
-        <Container maxWidth="xl" style={{ paddingBottom: 60 }}>
+        <Container maxWidth="xl" style={{ paddingTop: 70 }}>
           <NavBar />
 
           <Exercises
