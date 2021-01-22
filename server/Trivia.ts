@@ -33,7 +33,7 @@ async function getTriviaQuestionsFromCache(): Promise<Question[]> {
 /**
  * Fetches the question data from google sheets and caches the results
  */
-async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
+export async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
   const sheetsApi = google.sheets({ version: 'v4' });
 
   const {
