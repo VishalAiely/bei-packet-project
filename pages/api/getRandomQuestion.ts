@@ -1,10 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getTriviaQuestions } from '../../server/Trivia';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const questions = await getTriviaQuestions();
 
   const index = Math.floor(Math.random() * questions.length);
