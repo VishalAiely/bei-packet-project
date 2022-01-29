@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { Difficulty, Question } from '../utils/types/Trivia';
 
-const file = path.resolve('./public', 'cache/questionCache.json');
+const file = path.resolve(process.cwd(), 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
   const data: Question[] = await getTriviaQuestionsFromCache();

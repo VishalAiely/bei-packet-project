@@ -12,8 +12,8 @@ export interface Story {
 
 export type StoryCache = Record<string, Story>;
 
-const storyDataFile = path.resolve('./public', 'cache/storyData.json');
-const storyTitlesFile = path.resolve('./public', 'cache/storyTitles.json');
+const storyDataFile = path.resolve(process.cwd(), 'cache/storyData.json');
+const storyTitlesFile = path.resolve(process.cwd(), 'cache/storyTitles.json');
 
 export function getRandomStory(): Story {
   const rawdata = fs.readFileSync(storyDataFile);
