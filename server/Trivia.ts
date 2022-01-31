@@ -1,10 +1,7 @@
 import { google } from 'googleapis';
 import { auth } from './auth';
-import fs from 'fs';
-import path from 'path';
+import fetch from 'node-fetch';
 import { Difficulty, Question } from '../utils/types/Trivia';
-
-const file = path.resolve(process.cwd(), 'cache/questionCache.json');
 
 export async function getTriviaQuestions(): Promise<Question[]> {
   const data: Question[] = await getTriviaQuestionsFromCache();
@@ -24,8 +21,8 @@ export async function getTriviaQuestions(): Promise<Question[]> {
 }
 
 async function getTriviaQuestionsFromCache(): Promise<Question[]> {
-  const rawdata = fs.readFileSync(file);
-  const parsedData = (JSON.parse(rawdata.toString()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
+  const rawdata = await fetch('http://beipacket.org/cache/questionCache.json');
+  const parsedData = ((await rawdata.json()) as Question[]) ?? (await getTriviaQuestionsFromSheets());
   return parsedData;
 }
 
@@ -88,9 +85,9 @@ export async function getTriviaQuestionsFromSheets(): Promise<Question[]> {
       };
     }) || [];
 
-  const json = JSON.stringify(typedQuestions);
+  // const json = JSON.stringify(typedQuestions);
 
-  fs.writeFileSync(file, json);
+  // fs.writeFileSync(file, json);
 
   console.log(`Question Cache (size: ${typedQuestions.length}) has been created at ${new Date().toUTCString()}`);
 

@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import fetch from 'node-fetch';
 
 export interface Story {
   title: string;
@@ -12,54 +11,51 @@ export interface Story {
 
 export type StoryCache = Record<string, Story>;
 
-const storyDataFile = path.resolve(process.cwd(), 'cache/storyData.json');
-const storyTitlesFile = path.resolve(process.cwd(), 'cache/storyTitles.json');
-
-export function getRandomStory(): Story {
-  const rawdata = fs.readFileSync(storyDataFile);
-  const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
+export async function getRandomStory(): Promise<Story> {
+  const rawdata = await fetch('http://beipacket.org/cache/storyData.json');
+  const parsedData = (await rawdata.json()) as Record<string, Story>;
   const keys = Object.keys(parsedData);
   const randomStoryIndex = Math.floor(Math.random() * keys.length);
   return parsedData[keys[randomStoryIndex]];
 }
 
-export function getRandomStoryByCategory(category: string): Story {
-  const rawTitles = fs.readFileSync(storyTitlesFile);
-  const parsedData = JSON.parse(rawTitles.toString()) as Record<string, string[]>;
+export async function getRandomStoryByCategory(category: string): Promise<Story> {
+  const rawTitles = await fetch('http://beipacket.org/cache/storyTitles.json');
+  const parsedData = (await rawTitles.json()) as Record<string, string[]>;
   if (!parsedData[category]) throw new Error('Category Does Not Exist');
 
   const allStoriesofCategory = parsedData[category];
   const randomStory = allStoriesofCategory[Math.floor(Math.random() * allStoriesofCategory.length)];
 
-  const rawStories = fs.readFileSync(storyDataFile);
-  const parsedStories = JSON.parse(rawStories.toString()) as Record<string, Story>;
+  const rawStories = await fetch('https://beipacket.org/cache/storyData.json');
+  const parsedStories = (await rawStories.json()) as Record<string, Story>;
   return parsedStories[randomStory];
 }
 
-export function getStoryByName(title: string): Story {
-  const rawdata = fs.readFileSync(storyDataFile);
-  const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
+export async function getStoryByName(title: string): Promise<Story> {
+  const rawdata = await fetch('http://beipacket.org/cache/storyData.json');
+  const parsedData = (await rawdata.json()) as Record<string, Story>;
   if (!parsedData[title]) throw new Error('Story Does not exist');
 
   return parsedData[title];
 }
 
-export function getAllStoryNames(): Array<string> {
-  const rawdata = fs.readFileSync(storyDataFile);
-  const parsedData = JSON.parse(rawdata.toString()) as Record<string, Story>;
+export async function getAllStoryNames(): Promise<Array<string>> {
+  const rawdata = await fetch('http://beipacket.org/cache/storyData.json');
+  const parsedData = (await rawdata.json()) as Record<string, Story>;
   return Object.keys(parsedData);
 }
 
-export function getAllStoriesNamesInCategory(category: string): Array<string> {
-  const rawTitles = fs.readFileSync(storyTitlesFile);
-  const parsedData = JSON.parse(rawTitles.toString()) as Record<string, string[]>;
+export async function getAllStoriesNamesInCategory(category: string): Promise<Array<string>> {
+  const rawTitles = await fetch('http://beipacket.org/cache/storyTitles.json');
+  const parsedData = (await rawTitles.json()) as Record<string, string[]>;
   if (!parsedData[category]) throw new Error('Category Does Not Exist');
 
   return parsedData[category];
 }
 
-export function getAllCategories(): Array<string> {
-  const rawdata = fs.readFileSync(storyTitlesFile);
-  const parsedData = JSON.parse(rawdata.toString()) as Record<string, string[]>;
+export async function getAllCategories(): Promise<Array<string>> {
+  const rawTitles = await fetch('http://beipacket.org/cache/storyTitles.json');
+  const parsedData = (await rawTitles.json()) as Record<string, string[]>;
   return Object.keys(parsedData);
 }
